@@ -1,0 +1,221 @@
+#waip-chat-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999999;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#waip-chat-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--waip-primary, #0066cc), #00d2ff);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+#waip-chat-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+#waip-chat-button svg {
+    width: 30px;
+    height: 30px;
+}
+
+#waip-chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 380px;
+    height: 600px;
+    max-height: 80vh;
+    background: #1e1e1e;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: bottom right;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#waip-chat-window.waip-hidden {
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+}
+
+.waip-chat-header {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+}
+
+.waip-chat-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+#waip-chat-close {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+#waip-chat-close:hover {
+    color: #fff;
+}
+
+#waip-chat-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+#waip-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Scrollbar styles */
+#waip-chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+#waip-chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+#waip-chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+.waip-message {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: waipFadeIn 0.3s ease forwards;
+}
+
+@keyframes waipFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.waip-system-message, .waip-assistant-message {
+    background: rgba(255,255,255,0.08);
+    color: #eee;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.waip-user-message {
+    background: linear-gradient(135deg, var(--waip-primary, #0066cc), #00d2ff);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.waip-chat-input-area {
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.2);
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+#waip-chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 16px;
+    border-radius: 20px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#waip-chat-input:focus {
+    border-color: var(--waip-primary, #0066cc);
+}
+
+#waip-chat-send {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--waip-primary, #0066cc);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+#waip-chat-send:hover {
+    transform: scale(1.05);
+    background: #00d2ff;
+}
+
+#waip-chat-send svg {
+    width: 20px;
+    height: 20px;
+}
+
+.waip-typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    width: fit-content;
+}
+
+.waip-typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: waipTyping 1.4s infinite ease-in-out both;
+}
+
+.waip-typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.waip-typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes waipTyping {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+    #waip-chat-window {
+        width: calc(100vw - 40px);
+        bottom: 100px;
+        right: 20px;
+    }
+}
