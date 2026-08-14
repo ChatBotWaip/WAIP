@@ -38,8 +38,8 @@ class ChatController {
             // Save user message
             MessageRepository::saveMessage($conversation_id, 'user', $message);
 
-            // Build context (Sprint 1: just system prompt + recent history)
-            $system_prompt = SettingsManager::getSystemPrompt();
+            // Build context using PromptBuilder (Sprint 2: RAG context injection)
+            $system_prompt = \Waip\AI\Chat\PromptBuilder::buildSystemPrompt($message);
             
             $history = MessageRepository::getMessagesForConversation($conversation_id, 10);
             

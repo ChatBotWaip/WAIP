@@ -53,8 +53,32 @@ class Migrations {
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
+        $documents_table = Constants::DB_DOCUMENTS;
+        $embeddings_table = Constants::DB_EMBEDDINGS;
+
+        $sql_documents = "CREATE TABLE {$documents_table} (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            title varchar(255) NOT NULL,
+            type varchar(50) NOT NULL,
+            source_url varchar(255) NOT NULL,
+            last_indexed datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+            status varchar(50) DEFAULT 'indexed' NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        $sql_embeddings = "CREATE TABLE {$embeddings_table} (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            document_id bigint(20) NOT NULL,
+            chunk_text longtext NOT NULL,
+            vector_json longtext NOT NULL,
+            PRIMARY KEY  (id),
+            KEY document_id (document_id)
+        ) $charset_collate;";
+
         dbDelta($sql_conversations);
         dbDelta($sql_messages);
         dbDelta($sql_logs);
+        dbDelta($sql_documents);
+        dbDelta($sql_embeddings);
     }
 }

@@ -50,6 +50,9 @@ function waip_init() {
         
         $dashboard = new \Waip\Admin\Dashboard();
         $dashboard->init();
+
+        $batchIndexer = new \Waip\Knowledge\BatchIndexer();
+        $batchIndexer->init();
     }
 }
 add_action('rest_api_init', function() {
