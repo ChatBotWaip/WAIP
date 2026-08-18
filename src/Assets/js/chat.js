@@ -29,7 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const appendMessage = (content, sender) => {
         const msgDiv = document.createElement('div');
         msgDiv.className = `waip-message waip-${sender}-message`;
-        msgDiv.innerHTML = content.replace(/\n/g, '<br>'); // Basic newline handling
+        
+        // Basic markdown-like parsing (bold and newlines)
+        let formattedContent = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+            
+        msgDiv.innerHTML = formattedContent;
         messagesContainer.appendChild(msgDiv);
         scrollToBottom();
     };
