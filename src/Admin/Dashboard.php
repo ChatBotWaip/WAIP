@@ -12,19 +12,32 @@ class Dashboard {
     }
 
     public function override_dashboard_menu() {
-        // WordPress weirdness: add_menu_page creates a top level menu, and its first submenu is implicitly the same slug.
-        // We redefine it here so we can provide a callback for the main 'waip-dashboard' page.
+        // Rareza de WordPress: add_menu_page crea un menú de nivel superior, y su primer submenú es implícitamente el mismo slug.
+        // Lo redefinimos aquí para poder proporcionar un callback para la página principal 'waip-dashboard'.
         add_submenu_page(
             'waip-dashboard',
             'Dashboard',
             'Dashboard',
             'manage_options',
             'waip-dashboard',
-            [$this, 'render_page']
+            [$this, 'render_dashboard_page']
+        );
+
+        add_submenu_page(
+            'waip-dashboard',
+            'Base de Conocimiento',
+            'Conocimiento (RAG)',
+            'manage_options',
+            'waip-knowledge',
+            [$this, 'render_knowledge_page']
         );
     }
 
-    public function render_page() {
+    public function render_dashboard_page() {
         require WAIP_PLUGIN_DIR . 'src/Views/admin-dashboard.php';
+    }
+
+    public function render_knowledge_page() {
+        require WAIP_PLUGIN_DIR . 'src/Views/admin-knowledge.php';
     }
 }

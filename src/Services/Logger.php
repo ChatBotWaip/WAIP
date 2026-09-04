@@ -24,7 +24,7 @@ class Logger {
                 'level'      => $level,
                 'component'  => $component,
                 'message'    => $message,
-                'created_at' => current_time('mysql', 1)
+                'created_at' => current_time('mysql')
             ),
             array(
                 '%s',

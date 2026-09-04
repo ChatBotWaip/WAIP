@@ -21,13 +21,26 @@ class ChatWidget {
         wp_localize_script('waip-chat-js', 'waipData', [
             'apiUrl' => rest_url('waip/v1/chat'),
             'primaryColor' => SettingsManager::getPrimaryColor(),
-            'assistantName' => SettingsManager::getAssistantName()
+            'secondaryColor' => SettingsManager::getSecondaryColor(),
+            'assistantName' => SettingsManager::getAssistantName(),
+            'assistantLogo' => SettingsManager::getAssistantLogo(),
+            'welcomeMessage' => SettingsManager::getWelcomeMessage(),
+            'idleMessage' => SettingsManager::getIdleMessage(),
+            'idleTime' => SettingsManager::getIdleTime(),
+            'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber()),
+            'quickReplies' => [
+                '❓ Preguntas frecuentes',
+                '🎧 Hablar con un asesor',
+                '💰 Opciones de crédito'
+            ]
         ]);
     }
 
     public function render_widget() {
         $assistant_name = SettingsManager::getAssistantName();
+        $assistant_logo = SettingsManager::getAssistantLogo();
         $primary_color = SettingsManager::getPrimaryColor();
+        $secondary_color = SettingsManager::getSecondaryColor();
         require WAIP_PLUGIN_DIR . 'src/Views/frontend-widget.php';
     }
 }

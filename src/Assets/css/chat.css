@@ -1,217 +1,331 @@
+/* 
+   WAIP Chat Widget Styles
+   Maximized specificity to prevent WordPress theme bleed-through.
+*/
+
 #waip-chat-container {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 999999;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 999999 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
-#waip-chat-button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--waip-primary, #0066cc);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+#waip-chat-container * {
+    box-sizing: border-box !important;
+    letter-spacing: normal !important;
+    line-height: normal !important;
 }
 
-#waip-chat-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+#waip-chat-container #waip-chat-button {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background-color: var(--waip-primary) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--waip-primary) 40%, transparent) !important;
+    cursor: pointer !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-#waip-chat-button svg {
-    width: 28px;
-    height: 28px;
+#waip-chat-container #waip-chat-button:hover {
+    transform: scale(1.05) !important;
+    filter: brightness(1.1) !important;
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--waip-primary) 60%, transparent) !important;
 }
 
-#waip-chat-window {
-    position: absolute;
-    bottom: 80px;
-    right: 0;
-    width: 380px;
-    height: 600px;
-    max-height: 80vh;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-origin: bottom right;
-    border: 1px solid #eaeaea;
+#waip-chat-container #waip-chat-button svg {
+    width: 28px !important;
+    height: 28px !important;
+    fill: none !important;
+    stroke: #ffffff !important;
 }
 
-#waip-chat-window.waip-hidden {
-    opacity: 0;
-    transform: scale(0.9);
-    pointer-events: none;
+#waip-chat-container #waip-chat-window {
+    position: absolute !important;
+    bottom: 80px !important;
+    right: 0 !important;
+    width: 380px !important;
+    height: 600px !important;
+    max-height: 80vh !important;
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px color-mix(in srgb, var(--waip-primary) 15%, transparent) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+    transform-origin: bottom right !important;
+    border: 1px solid color-mix(in srgb, var(--waip-primary) 10%, transparent) !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.waip-chat-header {
-    background: var(--waip-primary, #0066cc);
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
+#waip-chat-container #waip-chat-window.waip-hidden {
+    opacity: 0 !important;
+    transform: scale(0.9) !important;
+    pointer-events: none !important;
 }
 
-.waip-chat-header h3 {
-    margin: 0;
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
+#waip-chat-container .waip-chat-header {
+    background-color: var(--waip-primary) !important;
+    padding: 18px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+    margin: 0 !important;
 }
 
-#waip-chat-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    padding: 5px;
-    transition: color 0.2s;
+#waip-chat-container .waip-chat-header h3 {
+    margin: 0 !important;
+    color: #ffffff !important;
+    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
 }
 
-#waip-chat-close:hover {
-    color: #fff;
+#waip-chat-container #waip-chat-close {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    cursor: pointer !important;
+    padding: 5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: opacity 0.2s !important;
+    box-shadow: none !important;
+    min-width: auto !important;
+    min-height: auto !important;
 }
 
-#waip-chat-close svg {
-    width: 20px;
-    height: 20px;
+#waip-chat-container #waip-chat-close:hover {
+    opacity: 0.8 !important;
+    background: transparent !important;
 }
 
-#waip-chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: #f9f9f9;
+#waip-chat-container #waip-chat-close svg {
+    width: 22px !important;
+    height: 22px !important;
+    stroke: #ffffff !important;
 }
 
-/* Scrollbar styles */
-#waip-chat-messages::-webkit-scrollbar {
-    width: 6px;
-}
-#waip-chat-messages::-webkit-scrollbar-track {
-    background: transparent;
-}
-#waip-chat-messages::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 3px;
+#waip-chat-container #waip-chat-messages {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    background-color: #ffffff !important;
+    margin: 0 !important;
 }
 
-.waip-message {
-    max-width: 85%;
-    padding: 12px 16px;
-    border-radius: 16px;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    animation: waipFadeIn 0.3s ease forwards;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+#waip-chat-container #waip-chat-messages::-webkit-scrollbar {
+    width: 6px !important;
+}
+#waip-chat-container #waip-chat-messages::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+#waip-chat-container #waip-chat-messages::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--waip-primary) 20%, transparent) !important;
+    border-radius: 3px !important;
+}
+
+/* Message Wrappers */
+#waip-chat-container .waip-message-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    max-width: 85% !important;
+    animation: waipFadeIn 0.3s ease forwards !important;
+}
+
+#waip-chat-container .waip-assistant-wrapper {
+    align-self: flex-start !important;
+}
+
+#waip-chat-container .waip-user-wrapper {
+    align-self: flex-end !important;
+    align-items: flex-end !important;
+}
+
+#waip-chat-container .waip-avatar-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+#waip-chat-container .waip-user-wrapper .waip-avatar-row {
+    flex-direction: row-reverse !important;
+}
+
+#waip-chat-container .waip-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    background-color: var(--waip-primary) !important; /* fallback */
+    border: none !important;
+}
+
+#waip-chat-container .waip-avatar svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke: #ffffff !important;
+}
+
+#waip-chat-container .waip-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: none !important;
+}
+
+#waip-chat-container .waip-assistant-avatar {
+    background-color: var(--waip-primary) !important;
+}
+
+#waip-chat-container .waip-user-avatar {
+    background-color: var(--waip-secondary) !important;
+}
+
+#waip-chat-container .waip-sender-name {
+    font-size: 0.85rem !important;
+    color: #111827 !important;
+    font-weight: 500 !important;
+}
+
+#waip-chat-container .waip-message {
+    padding: 12px 16px !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    word-break: break-word !important;
+}
+
+#waip-chat-container .waip-assistant-message {
+    background-color: color-mix(in srgb, var(--waip-primary) 8%, transparent) !important;
+    color: #111827 !important;
+    border-radius: 16px !important;
+    border-top-left-radius: 4px !important;
+}
+
+#waip-chat-container .waip-user-message {
+    background-color: var(--waip-secondary) !important;
+    color: #ffffff !important;
+    border-radius: 16px !important;
+    border-top-right-radius: 4px !important;
+}
+
+#waip-chat-container .waip-timestamp {
+    font-size: 0.7rem !important;
+    color: color-mix(in srgb, var(--waip-primary) 40%, black) !important;
+    margin-top: 2px !important;
+}
+
+#waip-chat-container .waip-assistant-wrapper .waip-timestamp {
+    align-self: flex-start !important;
+}
+
+#waip-chat-container .waip-user-wrapper .waip-timestamp {
+    align-self: flex-end !important;
 }
 
 @keyframes waipFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-.waip-system-message, .waip-assistant-message {
-    background: #ffffff;
-    color: #333333;
-    border: 1px solid #eeeeee;
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
+#waip-chat-container .waip-chat-input-area {
+    padding: 15px 20px !important;
+    background-color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-top: 1px solid color-mix(in srgb, var(--waip-primary) 10%, transparent) !important;
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
 }
 
-.waip-user-message {
-    background: var(--waip-primary, #0066cc);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
+#waip-chat-container #waip-chat-input {
+    flex: 1 !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 0.95rem !important;
+    color: #000000 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-.waip-chat-input-area {
-    padding: 15px 20px;
-    background: #ffffff;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid #eaeaea;
+#waip-chat-container #waip-chat-input::placeholder {
+    color: #9CA3AF !important;
+    opacity: 1 !important;
 }
 
-#waip-chat-input {
-    flex: 1;
-    background: #f0f2f5;
-    border: 1px solid transparent;
-    padding: 12px 16px;
-    border-radius: 20px;
-    color: #333;
-    outline: none;
-    transition: all 0.3s;
+#waip-chat-container .waip-chat-input-area button {
+    background-color: var(--waip-secondary) !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px !important;
+    transition: filter 0.2s, transform 0.1s !important;
+    box-shadow: 0 2px 5px color-mix(in srgb, var(--waip-secondary) 30%, transparent) !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border-radius: 12px !important;
 }
 
-#waip-chat-input:focus {
-    background: #ffffff;
-    border-color: var(--waip-primary, #0066cc);
-    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+#waip-chat-container .waip-chat-input-area button:hover {
+    filter: brightness(1.1) !important;
+    transform: scale(1.05) !important;
 }
 
-#waip-chat-send {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--waip-primary, #0066cc);
-    color: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+#waip-chat-container #waip-chat-send svg, 
+#waip-chat-container #waip-chat-attach svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke: #ffffff !important;
+    fill: none !important;
 }
 
-#waip-chat-send:hover {
-    transform: scale(1.05);
-    background: #005bb5;
+#waip-chat-container .waip-typing-indicator {
+    display: flex !important;
+    gap: 4px !important;
+    padding: 12px 16px !important;
+    background-color: color-mix(in srgb, var(--waip-primary) 8%, transparent) !important;
+    border-radius: 16px !important;
+    border-top-left-radius: 4px !important;
+    width: fit-content !important;
 }
 
-#waip-chat-send svg {
-    width: 20px;
-    height: 20px;
+#waip-chat-container .waip-typing-indicator span {
+    width: 6px !important;
+    height: 6px !important;
+    background-color: var(--waip-secondary) !important;
+    border-radius: 50% !important;
+    animation: waipTyping 1.4s infinite ease-in-out both !important;
 }
 
-.waip-typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 12px 16px;
-    background: #ffffff;
-    border: 1px solid #eeeeee;
-    border-radius: 16px;
-    border-bottom-left-radius: 4px;
-    align-self: flex-start;
-    width: fit-content;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.waip-typing-indicator span {
-    width: 6px;
-    height: 6px;
-    background: #999;
-    border-radius: 50%;
-    animation: waipTyping 1.4s infinite ease-in-out both;
-}
-
-.waip-typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.waip-typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+#waip-chat-container .waip-typing-indicator span:nth-child(1) { animation-delay: -0.32s !important; }
+#waip-chat-container .waip-typing-indicator span:nth-child(2) { animation-delay: -0.16s !important; }
 
 @keyframes waipTyping {
     0%, 80%, 100% { transform: scale(0); }
@@ -219,9 +333,154 @@
 }
 
 @media (max-width: 480px) {
-    #waip-chat-window {
-        width: calc(100vw - 40px);
-        bottom: 100px;
-        right: 20px;
+    #waip-chat-container {
+        right: 20px !important;
+        bottom: 20px !important;
     }
+    #waip-chat-container #waip-chat-window {
+        width: calc(100vw - 40px) !important;
+        height: 500px !important;
+        max-height: 70vh !important;
+        bottom: 80px !important;
+        right: 0 !important;
+    }
+}
+
+/* Image Preview Styles */
+#waip-chat-container #waip-image-preview-container {
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(5px) !important;
+    border-top: 1px solid color-mix(in srgb, var(--waip-primary) 10%, transparent) !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05) !important;
+    z-index: 10 !important;
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+#waip-chat-container #waip-image-preview-container.waip-hidden {
+    opacity: 0 !important;
+    transform: translateY(10px) !important;
+    pointer-events: none !important;
+    display: flex !important; /* Keep it flex to animate correctly, override hidden behavior */
+}
+
+#waip-chat-container #waip-image-preview-wrapper {
+    position: relative !important;
+    display: inline-block !important;
+}
+
+#waip-chat-container #waip-image-preview {
+    max-height: 60px !important;
+    border-radius: 8px !important;
+    border: 2px solid var(--waip-secondary) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+    object-fit: cover !important;
+}
+
+#waip-chat-container #waip-remove-image {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    background: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    transition: transform 0.2s !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    padding: 0 !important;
+}
+
+#waip-chat-container #waip-remove-image:hover {
+    transform: scale(1.1) !important;
+}
+
+/* Drag and Drop State */
+#waip-chat-container #waip-chat-window.waip-drag-active::after {
+    content: "Suelta tu imagen aquí" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    color: var(--waip-primary) !important;
+    border: 3px dashed var(--waip-secondary) !important;
+    border-radius: 16px !important;
+}
+
+/* Custom Link Button */
+#waip-chat-container .waip-button-link {
+    display: inline-block !important;
+    margin-top: 10px !important;
+    padding: 10px 18px !important;
+    background-color: var(--waip-secondary) !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--waip-secondary) 30%, transparent) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    text-align: center !important;
+}
+
+#waip-chat-container .waip-button-link:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px color-mix(in srgb, var(--waip-secondary) 40%, transparent) !important;
+}
+
+/* Quick Replies */
+#waip-chat-container .waip-quick-replies-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+    padding: 0 16px !important;
+    animation: waipFadeIn 0.3s ease forwards !important;
+    justify-content: flex-start !important;
+}
+
+#waip-chat-container .waip-quick-reply-btn {
+    background-color: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+    color: var(--waip-primary) !important;
+    padding: 8px 14px !important;
+    border-radius: 20px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+#waip-chat-container .waip-quick-reply-btn:hover {
+    background-color: var(--waip-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--waip-primary) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px color-mix(in srgb, var(--waip-primary) 30%, transparent) !important;
 }

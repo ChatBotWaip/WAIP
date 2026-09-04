@@ -11,14 +11,14 @@ class Extractor {
         $post = get_post($post_id);
         if (!$post) return '';
 
-        // Apply basic content filters but strip tags to keep only clean text for the LLM
+        // Aplicar filtros básicos de contenido pero eliminando etiquetas HTML para dejar texto limpio para el LLM
         $content = apply_filters('the_content', $post->post_content);
         
-        // Remove shortcodes, tags, line breaks
+        // Eliminar shortcodes, etiquetas, saltos de línea
         $content = strip_shortcodes($content);
         $content = wp_strip_all_tags($content);
         
-        // Remove multiple spaces/newlines
+        // Eliminar múltiples espacios/saltos de línea
         $content = preg_replace('/\s+/', ' ', $content);
 
         return trim($content);

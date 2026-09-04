@@ -8,8 +8,8 @@ if (!defined('ABSPATH')) {
 class SettingsManager {
     
     public function init() {
-        // Init settings logic if necessary
-        // Mostly used as a centralized accessor for settings in Options API
+        // Inicializar lógica de ajustes si es necesario
+        // Principalmente usado como un acceso centralizado para ajustes en la API de Opciones
     }
 
     public static function getApiKey() {
@@ -17,7 +17,7 @@ class SettingsManager {
     }
 
     public static function getModel() {
-        return get_option(Constants::OPTION_MODEL, 'gpt-4o');
+        return get_option(Constants::OPTION_MODEL, 'gpt-5.6-luna');
     }
 
     public static function getSystemPrompt() {
@@ -29,8 +29,33 @@ class SettingsManager {
         return get_option(Constants::OPTION_ASSISTANT_NAME, 'Coodelsur Bot');
     }
     
+    public static function getWelcomeMessage() {
+        $default = "¡Hola! Soy " . self::getAssistantName() . ", tu asistente virtual. ¿En qué te puedo ayudar?";
+        return get_option(Constants::OPTION_WELCOME_MSG, $default);
+    }
+    
+    public static function getAssistantLogo() {
+        return get_option(Constants::OPTION_ASSISTANT_LOGO, '');
+    }
+
     public static function getPrimaryColor() {
-        return get_option(Constants::OPTION_PRIMARY_COLOR, '#0066cc');
+        return get_option(Constants::OPTION_PRIMARY_COLOR, '#406ff3'); // Default actualizado para coincidir con la nueva imagen
+    }
+
+    public static function getIdleMessage() {
+        return get_option(Constants::OPTION_IDLE_MSG, '¿Sigues por ahí? Si necesitas más ayuda con Coodelsur, aquí estoy.');
+    }
+
+    public static function getIdleTime() {
+        return (int) get_option(Constants::OPTION_IDLE_TIME, 5);
+    }
+
+    public static function getWhatsappNumber() {
+        return get_option(Constants::OPTION_WHATSAPP_NUMBER, '');
+    }
+
+    public static function getSecondaryColor() {
+        return get_option(Constants::OPTION_SECONDARY_COLOR, '#a855f7'); // Morado de la imagen
     }
     
     public static function isRagEnabled() {
@@ -39,5 +64,17 @@ class SettingsManager {
 
     public static function getMaxChunks() {
         return (int) get_option(Constants::OPTION_MAX_CHUNKS, 3);
+    }
+
+    public static function isSimulatorEnabled() {
+        return get_option(Constants::OPTION_SIMULATOR_MODE, '0') === '1';
+    }
+
+    public static function getMaintenanceMessage() {
+        return get_option(Constants::OPTION_MAINTENANCE_MSG, 'En este momento nuestros sistemas de IA están en mantenimiento. Por favor comunícate a nuestras líneas de atención o intenta más tarde.');
+    }
+
+    public static function isPubliclyVisible() {
+        return get_option(Constants::OPTION_IS_ACTIVE, '0') === '1';
     }
 }

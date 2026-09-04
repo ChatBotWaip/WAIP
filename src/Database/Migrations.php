@@ -22,6 +22,9 @@ class Migrations {
         $sql_conversations = "CREATE TABLE {$conversations_table} (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             session_id varchar(100) NOT NULL,
+            ip_address varchar(45) DEFAULT NULL,
+            user_name varchar(100) DEFAULT NULL,
+            user_email varchar(100) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
             status varchar(50) DEFAULT 'active' NOT NULL,
@@ -39,6 +42,7 @@ class Migrations {
             input_cost decimal(10,6) DEFAULT 0.000000,
             output_cost decimal(10,6) DEFAULT 0.000000,
             total_cost decimal(10,6) DEFAULT 0.000000,
+            attachment_url longtext DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id),
             KEY conversation_id (conversation_id)
@@ -63,6 +67,7 @@ class Migrations {
             source_url varchar(255) NOT NULL,
             last_indexed datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
             status varchar(50) DEFAULT 'indexed' NOT NULL,
+            raw_text longtext DEFAULT NULL,
             PRIMARY KEY  (id)
         ) $charset_collate;";
 

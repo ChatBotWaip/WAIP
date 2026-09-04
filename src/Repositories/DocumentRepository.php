@@ -22,7 +22,7 @@ class DocumentRepository {
                 'last_indexed' => current_time('mysql', 1)
             ], ['id' => $existing_doc_id]);
             
-            // Delete old embeddings for this document
+            // Eliminar embeddings antiguos para este documento
             self::deleteEmbeddings($existing_doc_id);
             return $existing_doc_id;
         }
@@ -61,7 +61,7 @@ class DocumentRepository {
         global $wpdb;
         $table = Constants::DB_EMBEDDINGS;
         
-        // This brings all vectors into memory. This is exactly what the user requested for MVP ("similitud del coseno se hará en memoria usando PHP")
+        // Esto trae todos los vectores a memoria. Es exactamente lo solicitado para el MVP ("similitud del coseno se hará en memoria usando PHP")
         return $wpdb->get_results("SELECT id, document_id, chunk_text, vector_json FROM $table", ARRAY_A);
     }
 }

@@ -13,10 +13,12 @@ class BatchIndexer {
 
     public function init() {
         add_action('wp_ajax_waip_index_post', [$this, 'handle_ajax_index_post']);
+        add_action('wp_ajax_waip_extract_links', [$this, 'handle_ajax_extract_links']);
+        add_action('wp_ajax_waip_ingest_url', [$this, 'handle_ajax_ingest_url']);
     }
 
     public function handle_ajax_index_post() {
-        // Basic security check
+        // Control de seguridad básico
         if (!current_user_can('manage_options')) {
             wp_send_json_error('No tienes permisos para esto.', 403);
         }
@@ -35,6 +37,42 @@ class BatchIndexer {
             }
         } catch (\Exception $e) {
             wp_send_json_error($e->getMessage());
+        }
+    }
+
+    public function handle_ajax_extract_links() {
+        if (!current_user_can('manage_options') || !check_ajax_referer('waip_add_knowledge', 'security', false)) {
+            wp_send_json_error('Permiso denegado.', 403);
+        }
+
+        $url = isset($_POST['url']) ? esc_url_raw($_POST['url']) : '';
+        if (empty($url)) {
+            wp_send_json_error('URL es requerida.');
+        }
+
+        $links = \Waip\Knowledge\DocumentManager::extractInternalLinks($url, 30);
+        if (empty($links)) {
+            wp_send_json_error('No se encontraron enlaces válidos.');
+        }
+
+        wp_send_json_success(['links' => $links]);
+    }
+
+    public function handle_ajax_ingest_url() {
+        if (!current_user_can('manage_options') || !check_ajax_referer('waip_add_knowledge', 'security', false)) {
+            wp_send_json_error('Permiso denegado.', 403);
+        }
+
+        $url = isset($_POST['url']) ? esc_url_raw($_POST['url']) : '';
+        if (empty($url)) {
+            wp_send_json_error('URL es requerida.');
+        }
+
+        $result = \Waip\Knowledge\DocumentManager::ingestUrl($url);
+        if ($result === true) {
+            wp_send_json_success(['message' => 'URL procesada.']);
+        } else {
+            wp_send_json_error($result);
         }
     }
 

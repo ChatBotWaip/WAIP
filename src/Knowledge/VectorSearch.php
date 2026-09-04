@@ -10,11 +10,11 @@ if (!defined('ABSPATH')) {
 class VectorSearch {
 
     /**
-     * Search for the top K similar chunks based on cosine similarity
+     * Buscar los K fragmentos más similares basados en similitud del coseno
      * 
-     * @param array $query_vector The embedding vector of the user's query
-     * @param int $top_k Number of results to return
-     * @return array Array of associative arrays with 'chunk_text' and 'similarity'
+     * @param array $query_vector El vector de embedding de la consulta del usuario
+     * @param int $top_k Número de resultados a devolver
+     * @return array Array de arrays asociativos con 'chunk_text' y 'similarity'
      */
     public static function search($query_vector, $top_k = 3) {
         $all_embeddings = DocumentRepository::getAllEmbeddings();
@@ -30,8 +30,8 @@ class VectorSearch {
 
             $similarity = self::cosineSimilarity($query_vector, $db_vector);
             
-            // Only consider somewhat relevant results
-            if ($similarity > 0.5) {
+            // Solo considerar resultados algo relevantes
+            if ($similarity > 0.20) {
                 $results[] = [
                     'chunk_text' => $row['chunk_text'],
                     'similarity' => $similarity
@@ -39,17 +39,17 @@ class VectorSearch {
             }
         }
 
-        // Sort by similarity descending
+        // Ordenar por similitud de forma descendente
         usort($results, function($a, $b) {
             return $b['similarity'] <=> $a['similarity'];
         });
 
-        // Return top K
+        // Retornar el top K
         return array_slice($results, 0, $top_k);
     }
 
     /**
-     * Calculates the cosine similarity between two vectors
+     * Calcula la similitud del coseno entre dos vectores
      * 
      * @param array $vecA
      * @param array $vecB

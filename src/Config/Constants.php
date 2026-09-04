@@ -17,21 +17,34 @@ class Constants {
     const OPTION_MODEL = 'waip_model';
     const OPTION_SYSTEM_PROMPT = 'waip_system_prompt';
     const OPTION_ASSISTANT_NAME = 'waip_assistant_name';
+    const OPTION_ASSISTANT_LOGO = 'waip_assistant_logo';
     const OPTION_PRIMARY_COLOR = 'waip_primary_color';
+    const OPTION_SECONDARY_COLOR = 'waip_secondary_color';
+    const OPTION_WELCOME_MSG = 'waip_welcome_msg';
+    const OPTION_IDLE_MSG = 'waip_idle_msg';
+    const OPTION_IDLE_TIME = 'waip_idle_time';
+    const OPTION_WHATSAPP_NUMBER = 'waip_whatsapp_number';
 
-    // RAG configurations
+    // Configuraciones de RAG
     const OPTION_RAG_ENABLED = 'waip_rag_enabled';
     const OPTION_MAX_CHUNKS = 'waip_max_chunks';
 
+    // Funciones Premium
+    const OPTION_SIMULATOR_MODE = 'waip_simulator_mode';
+    const OPTION_MAINTENANCE_MSG = 'waip_maintenance_msg';
+    
+    // Visibilidad
+    const OPTION_IS_ACTIVE = 'waip_is_active';
+
     public static function getTableName($tableConstant) {
         global $wpdb;
-        // Even though prefix is "wp_ai_", sometimes installations have custom prefixes.
-        // Assuming we always hardcode the prefix exactly as requested by user or prepend WP's prefix.
-        // The user explicitly specified "Tablas personalizadas con prefijo wp_ai_".
-        // Therefore, the constants above already use "wp_ai_".
-        // To be safe and compatible with $wpdb queries, we just return the constant.
-        // Or if they mean $wpdb->prefix . "ai_", we would do that. The prompt said "Tablas BD: Prefijo wp_ai_".
-        // Let's use the constants directly, assuming standard `wp_` prefix for the overall site as the prompt implied.
+        // Aunque el prefijo es "wp_ai_", a veces las instalaciones tienen prefijos personalizados.
+        // Asumimos que siempre codificamos el prefijo exactamente como lo solicitó el usuario o le anteponemos el prefijo de WP.
+        // El usuario especificó explícitamente "Tablas personalizadas con prefijo wp_ai_".
+        // Por lo tanto, las constantes anteriores ya usan "wp_ai_".
+        // Para estar seguros y ser compatibles con las consultas de $wpdb, simplemente devolvemos la constante.
+        // O si se refieren a $wpdb->prefix . "ai_", haríamos eso.
+        // Usaremos las constantes directamente asumiendo el prefijo estándar `wp_` para todo el sitio.
         return $tableConstant;
     }
 }
