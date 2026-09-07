@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 // Definir constantes del plugin antes del autoloader
 if (!defined('WAIP_VERSION')) {
-    define('WAIP_VERSION', '1.0.1');
+    define('WAIP_VERSION', '1.1.0');
 }
 if (!defined('WAIP_DB_VERSION')) {
     define('WAIP_DB_VERSION', '1.4.0');
