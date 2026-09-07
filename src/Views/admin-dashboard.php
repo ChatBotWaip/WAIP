@@ -206,7 +206,7 @@ $recent_conversations = $conversations_data['items'];
                         <tbody>
                             <?php foreach ($recent_conversations as $conv): ?>
                                 <tr>
-                                    <td><strong>#<?php echo esc_html($conv['id']); ?></strong></td>
+                                    <td data-sort="<?php echo esc_attr($conv['id']); ?>"><strong>#<?php echo esc_html($conv['id']); ?></strong></td>
                                     <td>
                                         <?php if (!empty($conv['user_email'])): ?>
                                             <strong style="color: #0073aa;"><?php echo esc_html($conv['user_name'] ?: 'Sin nombre'); ?></strong><br>
@@ -216,7 +216,11 @@ $recent_conversations = $conversations_data['items'];
                                             <span style="font-size: 12px; color: #8c8f94;"><span class="dashicons dashicons-admin-network" style="font-size: 12px; line-height: 1.5;"></span> <?php echo esc_html($conv['ip_address'] ?: 'IP Desconocida'); ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo esc_html(wp_date('d M Y, H:i', strtotime($conv['updated_at']))); ?></td>
+                                    <?php 
+                                        $fecha_dt = new \DateTime($conv['updated_at'], new \DateTimeZone('UTC'));
+                                        $fecha_dt->setTimezone(wp_timezone());
+                                    ?>
+                                    <td data-sort="<?php echo esc_attr($fecha_dt->getTimestamp()); ?>"><?php echo esc_html($fecha_dt->format('d M Y, H:i')); ?></td>
                                     <td><?php echo esc_html($conv['message_count']); ?></td>
                                     <td>
                                         <span class="waip-status <?php echo esc_attr($conv['status']); ?>">
@@ -252,7 +256,11 @@ $recent_conversations = $conversations_data['items'];
                         <tbody>
                             <?php foreach ($recent_logs as $log): ?>
                                 <tr>
-                                    <td style="font-size: 12px; color: #646970;"><?php echo esc_html(date('d M, H:i:s', strtotime($log->created_at))); ?></td>
+                                    <?php 
+                                        $log_dt = new \DateTime($log->created_at, new \DateTimeZone('UTC'));
+                                        $log_dt->setTimezone(wp_timezone());
+                                    ?>
+                                    <td style="font-size: 12px; color: #646970;"><?php echo esc_html($log_dt->format('d M, H:i:s')); ?></td>
                                     <td>
                                         <span style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #fff; background: <?php echo $log->level === 'ERROR' ? '#d63638' : ($log->level === 'INFO' ? '#00a32a' : '#8c8f94'); ?>;">
                                             <?php echo esc_html($log->level); ?>
