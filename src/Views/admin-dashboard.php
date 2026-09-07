@@ -185,7 +185,12 @@ $recent_conversations = $conversations_data['items'];
         </div>
 
         <div class="waip-table-container">
-            <h2 style="margin-bottom: 15px;">Historial de Conversaciones (Últimos 30 días)</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Historial de Conversaciones (Últimos 30 días)</h2>
+                <a href="<?php echo admin_url('admin.php?page=waip-dashboard&waip_export=csv'); ?>" class="waip-btn">
+                    <span class="dashicons dashicons-download"></span> Exportar a Excel (CSV)
+                </a>
+            </div>
             <?php if (!empty($recent_conversations)): ?>
                 <table id="waip-conversations-table" class="wp-list-table widefat fixed striped waip-datatable" style="border: none; border-top: 1px solid #c3c4c7;">
                     <thead>

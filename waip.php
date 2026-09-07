@@ -85,3 +85,20 @@ add_action('plugins_loaded', function() {
         update_option('waip_db_version', WAIP_DB_VERSION);
     }
 });
+
+// Integración con GitHub Update Checker
+if (file_exists(WAIP_PLUGIN_DIR . 'src/lib/plugin-update-checker/plugin-update-checker.php')) {
+    require_once WAIP_PLUGIN_DIR . 'src/lib/plugin-update-checker/plugin-update-checker.php';
+    
+    $waipUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/ChatBotWaip/WAIP',
+        __FILE__,
+        'waip'
+    );
+    // Configurado para actualizar desde la rama main
+    $waipUpdateChecker->setBranch('main');
+    
+    // IMPORTANTE: Si el repositorio es PRIVADO, necesitas un Personal Access Token (PAT)
+    // Descomenta la siguiente línea y pon tu token ahí:
+    // $waipUpdateChecker->setAuthentication('tu_token_aqui');
+}
