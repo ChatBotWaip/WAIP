@@ -93,7 +93,7 @@ add_action('plugins_loaded', function() {
 add_action('admin_init', function() {
     // Forzar actualización de esquema para añadir columna user_phone
     if (get_option('waip_db_version') !== '1.3.10') {
-        \Waip\Database\Migrations::up();
+        \Waip\Database\Migrations::run();
         update_option('waip_db_version', '1.3.10');
     }
 
