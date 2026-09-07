@@ -59,7 +59,7 @@ class Dashboard {
 
             // Generar Excel XML nativo (soporta colores, filtros, bordes)
             header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename=WAIP-Leads-' . date('Y-m-d') . '.xls');
+            header('Content-Disposition: attachment; filename=WAIP-Leads-' . current_time('Ymd_Hi') . '.xls');
             header('Cache-Control: max-age=0');
             
             echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -216,7 +216,8 @@ class Dashboard {
                 $rowStyle = ($rowIndex % 2 === 1) ? 'sRowAlt' : 'Default';
                 
                 echo '<Row ss:Height="30">' . "\n";
-                $fecha_local = new \DateTime($conv['updated_at']);
+                $fecha_local = new \DateTime($conv['updated_at'], wp_timezone());
+                $fecha_local->setTimezone(new \DateTimeZone('America/Bogota'));
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . $fecha_local->format('d/m/Y H:i') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_name'] ?: 'Anónimo') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_email'] ?: 'No registrado') . '</Data></Cell>' . "\n";

@@ -230,7 +230,8 @@ $recent_conversations = $conversations_data['items'];
                                         <?php endif; ?>
                                     </td>
                                     <?php 
-                                        $fecha_dt = new \DateTime($conv['updated_at']);
+                                        $fecha_dt = new \DateTime($conv['updated_at'], wp_timezone());
+                                        $fecha_dt->setTimezone(new \DateTimeZone('America/Bogota'));
                                     ?>
                                     <td data-sort="<?php echo esc_attr($fecha_dt->getTimestamp()); ?>"><?php echo esc_html($fecha_dt->format('d M Y, H:i')); ?></td>
                                     <td><?php echo esc_html($conv['message_count']); ?></td>
@@ -269,7 +270,8 @@ $recent_conversations = $conversations_data['items'];
                             <?php foreach ($recent_logs as $log): ?>
                                 <tr>
                                     <?php 
-                                        $log_dt = new \DateTime($log->created_at);
+                                        $log_dt = new \DateTime($log->created_at, wp_timezone());
+                                        $log_dt->setTimezone(new \DateTimeZone('America/Bogota'));
                                     ?>
                                     <td style="font-size: 12px; color: #646970;"><?php echo esc_html($log_dt->format('d M, H:i:s')); ?></td>
                                     <td>
