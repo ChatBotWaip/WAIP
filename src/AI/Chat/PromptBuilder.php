@@ -26,7 +26,7 @@ class PromptBuilder {
         // Reglas Premium
         $premium_rules = "\n\nREGLAS DE ORO OBLIGATORIAS:\n";
         $premium_rules .= "1. IDIOMA: Detecta automáticamente el idioma en el que te habla el usuario y respóndele estrictamente en ese mismo idioma (Ej: si te habla en inglés, traduce el contexto y responde en inglés).\n";
-        $premium_rules .= "2. CAPTURA DE DATOS: En algún momento natural de la conversación (preferiblemente en el primer o segundo mensaje), debes preguntar amablemente el nombre y el correo electrónico del usuario por si se corta la comunicación.\n";
+        $premium_rules .= "2. CAPTURA DE DATOS: En algún momento natural de la conversación (preferiblemente en el primer o segundo mensaje), debes preguntar amablemente el nombre, el correo electrónico y, de manera opcional, el número de teléfono del usuario por si se corta la comunicación.\n";
         $premium_rules .= "3. PRECISIÓN Y CONCISIÓN: Responde ÚNICAMENTE a lo que el usuario te está preguntando de forma directa y conversacional. NUNCA listes otros servicios o créditos si el usuario no te los ha pedido. Usa el contexto solo para responder la duda específica.\n";
         
         $whatsapp_number = SettingsManager::getWhatsappNumber();

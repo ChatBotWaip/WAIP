@@ -188,7 +188,7 @@ $recent_conversations = $conversations_data['items'];
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">Historial de Conversaciones (Últimos 30 días)</h2>
                 <a href="<?php echo admin_url('admin.php?page=waip-dashboard&waip_export=csv'); ?>" class="waip-btn">
-                    <span class="dashicons dashicons-download"></span> Exportar a Excel (CSV)
+                    <span class="dashicons dashicons-download"></span> Exportar a Excel
                 </a>
             </div>
             <?php if (!empty($recent_conversations)): ?>
@@ -301,7 +301,31 @@ $recent_conversations = $conversations_data['items'];
             },
             pageLength: 10,
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-            order: [[0, "desc"]]
+            order: [[0, "desc"]],
+            initComplete: function () {
+                var api = this.api();
+                
+                // Si es la tabla de conversaciones, añadir filtros
+                if ($(this).attr('id') === 'waip-conversations-table') {
+                    var filterContainer = $('<div class="waip-custom-filters" style="display:inline-block; margin-left: 15px;"></div>').appendTo('#waip-conversations-table_filter');
+                    
+                    // Filtro de Estado (Columna 4)
+                    var stateSelect = $('<select style="vertical-align: middle; margin-left: 10px;"><option value="">Todos los estados</option><option value="Activa">Activa</option><option value="Cerrada">Cerrada</option></select>')
+                        .appendTo(filterContainer)
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            api.column(4).search(val ? val : '', true, false).draw();
+                        });
+                        
+                    // Filtro de Contacto (Columna 1)
+                    var contactSelect = $('<select style="vertical-align: middle; margin-left: 10px;"><option value="">Todos los clientes</option><option value="@">Con Correo</option><option value="Anónimo">Anónimos</option></select>')
+                        .appendTo(filterContainer)
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            api.column(1).search(val ? val : '', true, false).draw();
+                        });
+                }
+            }
         });
     });
 </script>
