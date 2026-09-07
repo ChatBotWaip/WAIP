@@ -187,11 +187,11 @@ class Dashboard {
             
             // Fila 2: Subtítulo con fecha
             echo '<Row ss:Height="22">
-                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . wp_date('d/m/Y') . ' a las ' . wp_date('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
+                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . current_time('d/m/Y') . ' a las ' . current_time('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
             </Row>' . "\n";
             
             // Fila 3: Encabezados
-            $headers = ['Fecha', 'Nombre del Cliente', 'Email / Teléfono', 'Prioridad (IA)', 'Observación / Necesidad (IA)', 'Mensajes', 'Estado'];
+            $headers = ['Fecha', 'Nombre del Cliente', 'Nombre, Email o Teléfono', 'Prioridad (IA)', 'Observación / Necesidad (IA)', 'Mensajes', 'Estado'];
             echo '<Row ss:Height="35">' . "\n";
             foreach ($headers as $header) {
                 echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">' . htmlspecialchars($header) . '</Data></Cell>' . "\n";
@@ -215,8 +215,7 @@ class Dashboard {
                 $rowStyle = ($rowIndex % 2 === 1) ? 'sRowAlt' : 'Default';
                 
                 echo '<Row ss:Height="30">' . "\n";
-                $fecha_local = new \DateTime($conv['updated_at'], new \DateTimeZone('UTC'));
-                $fecha_local->setTimezone($wp_tz);
+                $fecha_local = new \DateTime($conv['updated_at']);
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . $fecha_local->format('d/m/Y H:i') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_name'] ?: 'Anónimo') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_email'] ?: 'No registrado') . '</Data></Cell>' . "\n";

@@ -196,7 +196,7 @@ $recent_conversations = $conversations_data['items'];
                     <thead>
                         <tr>
                                 <th style="width: 8%;">ID</th>
-                                <th style="width: 25%;">Cliente / IP</th>
+                                <th style="width: 25%;">Nombre, Email o Teléfono</th>
                                 <th style="width: 20%;">Última Actividad</th>
                                 <th style="width: 12%;">Mensajes</th>
                                 <th style="width: 15%;">Estado</th>
@@ -217,8 +217,7 @@ $recent_conversations = $conversations_data['items'];
                                         <?php endif; ?>
                                     </td>
                                     <?php 
-                                        $fecha_dt = new \DateTime($conv['updated_at'], new \DateTimeZone('UTC'));
-                                        $fecha_dt->setTimezone(new \DateTimeZone('America/Bogota'));
+                                        $fecha_dt = new \DateTime($conv['updated_at']);
                                     ?>
                                     <td data-sort="<?php echo esc_attr($fecha_dt->getTimestamp()); ?>"><?php echo esc_html($fecha_dt->format('d M Y, H:i')); ?></td>
                                     <td><?php echo esc_html($conv['message_count']); ?></td>
@@ -257,8 +256,7 @@ $recent_conversations = $conversations_data['items'];
                             <?php foreach ($recent_logs as $log): ?>
                                 <tr>
                                     <?php 
-                                        $log_dt = new \DateTime($log->created_at, new \DateTimeZone('UTC'));
-                                        $log_dt->setTimezone(new \DateTimeZone('America/Bogota'));
+                                        $log_dt = new \DateTime($log->created_at);
                                     ?>
                                     <td style="font-size: 12px; color: #646970;"><?php echo esc_html($log_dt->format('d M, H:i:s')); ?></td>
                                     <td>
@@ -309,7 +307,7 @@ $recent_conversations = $conversations_data['items'];
             },
             pageLength: 10,
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-            order: [[0, "desc"]],
+            order: [[2, "desc"]],
             initComplete: function () {
                 var api = this.api();
                 
