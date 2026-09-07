@@ -42,8 +42,8 @@ class Dashboard {
             
             set_time_limit(0);
             
-            // Zona horaria configurada en WordPress
-            $wp_tz = wp_timezone();
+            // Forzar zona horaria a Colombia para evitar problemas de configuración del servidor
+            $wp_tz = new \DateTimeZone('America/Bogota');
             
             // Limpiar conversaciones con 0 mensajes antes de exportar
             \Waip\Repositories\MessageRepository::deleteOldConversations();

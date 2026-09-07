@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.4
+ * Version: 1.3.6
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -87,6 +87,14 @@ add_action('plugins_loaded', function() {
     
     // Inicializar trabajos en segundo plano
     \Waip\Jobs\LeadAnalyzerJob::init();
+});
+
+// Añadir un trigger para pruebas manuales del cron de correos
+add_action('admin_init', function() {
+    if (isset($_GET['waip_test_cron']) && current_user_can('manage_options')) {
+        \Waip\Jobs\LeadAnalyzerJob::run();
+        wp_die('Cron ejecutado manualmente. Revisa tu correo o el dashboard.');
+    }
 });
 
 // Integración con GitHub Update Checker
