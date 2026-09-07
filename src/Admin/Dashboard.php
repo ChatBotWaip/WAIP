@@ -59,7 +59,8 @@ class Dashboard {
 
             // Generar Excel XML nativo (soporta colores, filtros, bordes)
             header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename=WAIP-Leads-' . current_time('Ymd_Hi') . '.xls');
+            $now = new \DateTime('now', new \DateTimeZone('America/Bogota'));
+            header('Content-Disposition: attachment; filename=WAIP-Leads-' . $now->format('Ymd_Hi') . '.xls');
             header('Cache-Control: max-age=0');
             
             echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -187,8 +188,9 @@ class Dashboard {
             </Row>' . "\n";
             
             // Fila 2: Subtítulo con fecha
+            $now = new \DateTime('now', new \DateTimeZone('America/Bogota'));
             echo '<Row ss:Height="22">
-                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . current_time('d/m/Y') . ' a las ' . current_time('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
+                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . $now->format('d/m/Y') . ' a las ' . $now->format('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
             </Row>' . "\n";
             
             // Fila 3: Encabezados
