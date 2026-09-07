@@ -197,12 +197,12 @@ $recent_conversations = $conversations_data['items'];
                         <tr>
                                 <th style="width: 5%;">ID</th>
                                 <th style="width: 15%;">Nombre</th>
-                                <th style="width: 15%;">Email</th>
-                                <th style="width: 15%;">Teléfono</th>
+                                <th style="width: 18%;">Email</th>
+                                <th style="width: 12%;">Teléfono</th>
                                 <th style="width: 15%;">Última Actividad</th>
                                 <th style="width: 10%;">Mensajes</th>
-                                <th style="width: 15%;">Estado</th>
-                                <th>Acciones</th>
+                                <th style="width: 10%;">Estado</th>
+                                <th style="width: 15%; white-space: nowrap;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
