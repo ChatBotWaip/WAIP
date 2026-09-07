@@ -216,7 +216,7 @@ $recent_conversations = $conversations_data['items'];
                                             <span style="font-size: 12px; color: #8c8f94;"><span class="dashicons dashicons-admin-network" style="font-size: 12px; line-height: 1.5;"></span> <?php echo esc_html($conv['ip_address'] ?: 'IP Desconocida'); ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo esc_html(date('d M Y, H:i', strtotime($conv['updated_at']))); ?></td>
+                                    <td><?php echo esc_html(wp_date('d M Y, H:i', strtotime($conv['updated_at']))); ?></td>
                                     <td><?php echo esc_html($conv['message_count']); ?></td>
                                     <td>
                                         <span class="waip-status <?php echo esc_attr($conv['status']); ?>">

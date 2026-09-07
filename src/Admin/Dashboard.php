@@ -42,6 +42,18 @@ class Dashboard {
             
             set_time_limit(0);
             
+            // Zona horaria configurada en WordPress
+            $wp_tz = wp_timezone();
+            
+            // Limpiar conversaciones con 0 mensajes antes de exportar
+            \Waip\Repositories\MessageRepository::deleteOldConversations();
+            
+            $conversations_data = \Waip\Repositories\MessageRepository::getAllConversations(1, 10000);
+            $conversations = $conversations_data['items'];
+            
+            // Analizar con IA las conversaciones pendientes que tengan contacto
+            $this->analyze_pending_leads($conversations);
+            // Re-obtener los datos actualizados
             $conversations_data = \Waip\Repositories\MessageRepository::getAllConversations(1, 10000);
             $conversations = $conversations_data['items'];
 
@@ -175,7 +187,7 @@ class Dashboard {
             
             // Fila 2: Subtítulo con fecha
             echo '<Row ss:Height="22">
-                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . date('d/m/Y') . ' a las ' . date('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
+                <Cell ss:StyleID="sSubtitle" ss:MergeAcross="6"><Data ss:Type="String">Generado el ' . wp_date('d/m/Y') . ' a las ' . wp_date('H:i') . ' | Total de leads: ' . $totalRows . '</Data></Cell>
             </Row>' . "\n";
             
             // Fila 3: Encabezados
@@ -203,7 +215,9 @@ class Dashboard {
                 $rowStyle = ($rowIndex % 2 === 1) ? 'sRowAlt' : 'Default';
                 
                 echo '<Row ss:Height="30">' . "\n";
-                echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . date('d/m/Y H:i', strtotime($conv['updated_at'])) . '</Data></Cell>' . "\n";
+                $fecha_local = new \DateTime($conv['updated_at'], new \DateTimeZone('UTC'));
+                $fecha_local->setTimezone($wp_tz);
+                echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . $fecha_local->format('d/m/Y H:i') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_name'] ?: 'Anónimo') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_email'] ?: 'No registrado') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $prioStyle . '"><Data ss:Type="String">' . htmlspecialchars($prioridad) . '</Data></Cell>' . "\n";
@@ -237,6 +251,74 @@ class Dashboard {
             echo '</Worksheet>' . "\n";
             echo '</Workbook>';
             exit;
+        }
+    }
+    
+    /**
+     * Analiza con IA las conversaciones que tienen contacto pero no tienen resumen aún.
+     */
+    private function analyze_pending_leads($conversations) {
+        global $wpdb;
+        $table = \Waip\Config\Constants::DB_CONVERSATIONS;
+        
+        $pending = [];
+        foreach ($conversations as $conv) {
+            // Solo analizar si tiene contacto y no tiene resumen
+            if (!empty($conv['user_email']) && empty($conv['ai_summary'])) {
+                $pending[] = $conv;
+            }
+        }
+        
+        if (empty($pending)) return;
+        
+        try {
+            $openai = new \Waip\AI\Providers\OpenAIProvider();
+            
+            foreach ($pending as $lead) {
+                $messages = \Waip\Repositories\MessageRepository::getMessagesForConversation($lead['id'], 100);
+                if (empty($messages)) continue;
+                
+                $formatted_chat = "";
+                foreach ($messages as $msg) {
+                    $role = $msg['role'] === 'user' ? 'Cliente' : 'Asistente';
+                    $formatted_chat .= "{$role}: {$msg['content']}\n";
+                }
+                
+                $system_prompt = 'Actúa como calificador de ventas. Analiza la conversación y devuelve SOLO un JSON: {"resumen": "1-2 oraciones sobre lo que busca el cliente", "prioridad": "Alta|Media|Baja"}. Alta=urgencia o intención fuerte de compra. Media=interés normal. Baja=solo saludó.';
+                
+                $response = $openai->generateResponse([
+                    ['role' => 'system', 'content' => $system_prompt],
+                    ['role' => 'user', 'content' => "Conversación:\n" . $formatted_chat]
+                ], ['model' => 'gpt-4o-mini', 'temperature' => 0.1]);
+                
+                $content = str_replace(['```json', '```'], '', $response['content']);
+                $json = json_decode(trim($content), true);
+                
+                $resumen = $json['resumen'] ?? 'Resumen no disponible';
+                $prioridad = $json['prioridad'] ?? 'Baja';
+                
+                // También intentar extraer nombre de la conversación si está vacío
+                $nombre = $lead['user_name'];
+                if (empty($nombre)) {
+                    // Pedir a la IA que extraiga el nombre
+                    $name_response = $openai->generateResponse([
+                        ['role' => 'system', 'content' => 'Del siguiente chat, extrae SOLAMENTE el nombre del cliente. Si no se identifica, responde exactamente: ANONIMO. No agregues nada más.'],
+                        ['role' => 'user', 'content' => $formatted_chat]
+                    ], ['model' => 'gpt-4o-mini', 'temperature' => 0]);
+                    
+                    $extracted_name = trim($name_response['content']);
+                    if ($extracted_name !== 'ANONIMO' && strlen($extracted_name) > 1 && strlen($extracted_name) < 60) {
+                        $wpdb->update($table, ['user_name' => $extracted_name], ['id' => $lead['id']]);
+                    }
+                }
+                
+                $wpdb->update($table, [
+                    'ai_summary' => $resumen,
+                    'ai_priority' => $prioridad,
+                ], ['id' => $lead['id']]);
+            }
+        } catch (\Exception $e) {
+            \Waip\Services\Logger::error('ExportAnalyzer', $e->getMessage());
         }
     }
 

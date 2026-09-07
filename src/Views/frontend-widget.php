@@ -20,18 +20,8 @@ if (!defined('ABSPATH')) {
             <!-- Los mensajes serán cargados dinámicamente por chat.js -->
         </div>
         <div class="waip-chat-input-area" style="position: relative;">
-            <div id="waip-image-preview-container" class="waip-hidden">
-                <div id="waip-image-preview-wrapper">
-                    <img id="waip-image-preview" src="">
-                    <button id="waip-remove-image" type="button" title="Eliminar imagen">&times;</button>
-                </div>
-            </div>
             <div style="display: flex; align-items: center; width: 100%; gap: 8px;">
                 <input type="text" id="waip-chat-input" placeholder="Escribe un mensaje" autocomplete="off">
-                <input type="file" id="waip-chat-file" accept="image/png, image/jpeg, image/webp" class="waip-hidden" style="display: none;">
-                <button id="waip-chat-attach" type="button" title="Adjuntar Imagen">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                </button>
                 <button id="waip-chat-send" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>

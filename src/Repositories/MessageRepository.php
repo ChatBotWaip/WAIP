@@ -133,6 +133,9 @@ class MessageRepository {
         $conversations_table = Constants::DB_CONVERSATIONS;
         $messages_table = Constants::DB_MESSAGES;
 
+        // Eliminar conversaciones con 0 mensajes (basura)
+        $wpdb->query("DELETE FROM $conversations_table WHERE id NOT IN (SELECT DISTINCT conversation_id FROM $messages_table)");
+
         // Eliminar conversaciones más antiguas de 30 días
         $thirty_days_ago = date('Y-m-d H:i:s', current_time('timestamp', 1) - (30 * 86400));
         

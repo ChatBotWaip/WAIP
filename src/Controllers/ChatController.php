@@ -58,10 +58,37 @@ class ChatController {
                 MessageRepository::updateConversationLead($conversation_id, null, $email);
             }
             
-            // Captura de Leads: Extraer posible nombre
-            if (preg_match('/(?:me llamo|mi nombre es|soy)\s+([A-ZÁÉÍÓÚ][a-záéíóú]+(?:\s+[A-ZÁÉÍÓÚ][a-záéíóú]+)?)/i', $message, $matches)) {
-                $name = trim($matches[1]);
-                MessageRepository::updateConversationLead($conversation_id, $name, null);
+            // Captura de Leads: Extraer posible nombre (múltiples patrones)
+            $name_patterns = [
+                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,2})/iu',
+                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
+            ];
+            // Si el mensaje es SOLO un nombre (1-3 palabras capitalizadas), también capturarlo
+            if (preg_match('/^([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,2})$/u', trim($message), $matches)) {
+                $possible_name = trim($matches[1]);
+                // Solo guardar si no es una palabra genérica común
+                $excluded = ['Hola', 'Buenos', 'Buenas', 'Gracias', 'Ayuda', 'Listo', 'Claro', 'Vale', 'Perfecto', 'Consulta'];
+                if (!in_array($possible_name, $excluded) && mb_strlen($possible_name) > 2) {
+                    MessageRepository::updateConversationLead($conversation_id, $possible_name, null);
+                }
+            }
+            foreach ($name_patterns as $pattern) {
+                if (preg_match($pattern, $message, $matches)) {
+                    $name = trim($matches[1]);
+                    MessageRepository::updateConversationLead($conversation_id, $name, null);
+                    break;
+                }
+            }
+            
+            // Captura de Leads: Extraer posible número de teléfono
+            if (preg_match('/(?:\+?57|0)?[\s-]?3[0-9]{2}[\s-]?[0-9]{3}[\s-]?[0-9]{4}/', $message, $matches)) {
+                $phone = preg_replace('/[\s-]/', '', $matches[0]);
+                // Guardar teléfono en el campo de email si no hay email aún
+                global $wpdb;
+                $current = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM " . \Waip\Config\Constants::DB_CONVERSATIONS . " WHERE id = %d", $conversation_id));
+                if (empty($current)) {
+                    MessageRepository::updateConversationLead($conversation_id, null, $phone);
+                }
             }
 
             // Construir contexto usando PromptBuilder (Inyección de contexto RAG)
