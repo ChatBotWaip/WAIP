@@ -60,11 +60,11 @@ class ChatController {
             
             // Captura de Leads: Extraer posible nombre (múltiples patrones)
             $name_patterns = [
-                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,2})/iu',
-                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
+                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
+                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
             ];
-            // Si el mensaje es SOLO un nombre (1-3 palabras capitalizadas), también capturarlo
-            if (preg_match('/^([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,2})$/u', trim($message), $matches)) {
+            // Si el mensaje es SOLO un nombre (1-3 palabras), también capturarlo
+            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
                 $possible_name = trim($matches[1]);
                 // Solo guardar si no es una palabra genérica común
                 $excluded = ['Hola', 'Buenos', 'Buenas', 'Gracias', 'Ayuda', 'Listo', 'Claro', 'Vale', 'Perfecto', 'Consulta'];
@@ -80,8 +80,8 @@ class ChatController {
                 }
             }
             
-            // Captura de Leads: Extraer posible número de teléfono
-            if (preg_match('/(?:\+?57|0)?[\s-]?3[0-9]{2}[\s-]?[0-9]{3}[\s-]?[0-9]{4}/', $message, $matches)) {
+            // Captura de Leads: Extraer posible número de teléfono (Colombiano 10 dígitos o genérico con espacios)
+            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
                 $phone = preg_replace('/[\s-]/', '', $matches[0]);
                 // Guardar teléfono en su propia columna user_phone
                 MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
