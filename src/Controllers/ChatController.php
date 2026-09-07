@@ -83,12 +83,8 @@ class ChatController {
             // Captura de Leads: Extraer posible número de teléfono
             if (preg_match('/(?:\+?57|0)?[\s-]?3[0-9]{2}[\s-]?[0-9]{3}[\s-]?[0-9]{4}/', $message, $matches)) {
                 $phone = preg_replace('/[\s-]/', '', $matches[0]);
-                // Guardar teléfono en el campo de email si no hay email aún
-                global $wpdb;
-                $current = $wpdb->get_var($wpdb->prepare("SELECT user_email FROM " . \Waip\Config\Constants::DB_CONVERSATIONS . " WHERE id = %d", $conversation_id));
-                if (empty($current)) {
-                    MessageRepository::updateConversationLead($conversation_id, null, $phone);
-                }
+                // Guardar teléfono en su propia columna user_phone
+                MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
             }
 
             // Construir contexto usando PromptBuilder (Inyección de contexto RAG)

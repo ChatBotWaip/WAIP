@@ -56,13 +56,14 @@ class MessageRepository {
         return $row->id;
     }
 
-    public static function updateConversationLead($conversation_id, $name = null, $email = null) {
+    public static function updateConversationLead($conversation_id, $name = null, $email = null, $phone = null) {
         global $wpdb;
         $table = Constants::DB_CONVERSATIONS;
         
         $data = [];
         if ($name) $data['user_name'] = sanitize_text_field($name);
         if ($email) $data['user_email'] = sanitize_email($email);
+        if ($phone) $data['user_phone'] = sanitize_text_field($phone);
         
         if (!empty($data)) {
             $wpdb->update($table, $data, ['id' => $conversation_id]);

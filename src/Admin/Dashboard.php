@@ -175,10 +175,11 @@ class Dashboard {
             echo '<Column ss:Index="1" ss:Width="130"/>';  // Fecha
             echo '<Column ss:Index="2" ss:Width="180"/>';  // Nombre
             echo '<Column ss:Index="3" ss:Width="220"/>';  // Email
-            echo '<Column ss:Index="4" ss:Width="120"/>';  // Prioridad
-            echo '<Column ss:Index="5" ss:Width="400"/>';  // Observación
-            echo '<Column ss:Index="6" ss:Width="100"/>';  // Mensajes
-            echo '<Column ss:Index="7" ss:Width="100"/>';  // Estado
+            echo '<Column ss:Index="4" ss:Width="120"/>';  // Telefono
+            echo '<Column ss:Index="5" ss:Width="120"/>';  // Prioridad
+            echo '<Column ss:Index="6" ss:Width="400"/>';  // Observación
+            echo '<Column ss:Index="7" ss:Width="100"/>';  // Mensajes
+            echo '<Column ss:Index="8" ss:Width="100"/>';  // Estado
             
             // Fila 1: Título
             echo '<Row ss:Height="35">
@@ -191,7 +192,7 @@ class Dashboard {
             </Row>' . "\n";
             
             // Fila 3: Encabezados
-            $headers = ['Fecha', 'Nombre del Cliente', 'Nombre, Email o Teléfono', 'Prioridad (IA)', 'Observación / Necesidad (IA)', 'Mensajes', 'Estado'];
+            $headers = ['Fecha', 'Nombre del Cliente', 'Email', 'Teléfono', 'Prioridad (IA)', 'Observación / Necesidad (IA)', 'Mensajes', 'Estado'];
             echo '<Row ss:Height="35">' . "\n";
             foreach ($headers as $header) {
                 echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">' . htmlspecialchars($header) . '</Data></Cell>' . "\n";
@@ -219,6 +220,7 @@ class Dashboard {
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . $fecha_local->format('d/m/Y H:i') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_name'] ?: 'Anónimo') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_email'] ?: 'No registrado') . '</Data></Cell>' . "\n";
+                echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($conv['user_phone'] ?: 'No registrado') . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $prioStyle . '"><Data ss:Type="String">' . htmlspecialchars($prioridad) . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="String">' . htmlspecialchars($observacion) . '</Data></Cell>' . "\n";
                 echo '<Cell ss:StyleID="' . $rowStyle . '"><Data ss:Type="Number">' . intval($mensajes_count) . '</Data></Cell>' . "\n";

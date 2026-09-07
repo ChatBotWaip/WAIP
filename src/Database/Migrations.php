@@ -25,6 +25,7 @@ class Migrations {
             ip_address varchar(45) DEFAULT NULL,
             user_name varchar(100) DEFAULT NULL,
             user_email varchar(100) DEFAULT NULL,
+            user_phone varchar(50) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
             status varchar(50) DEFAULT 'active' NOT NULL,

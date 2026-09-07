@@ -195,10 +195,12 @@ $recent_conversations = $conversations_data['items'];
                 <table id="waip-conversations-table" class="wp-list-table widefat fixed striped waip-datatable" style="border: none; border-top: 1px solid #c3c4c7;">
                     <thead>
                         <tr>
-                                <th style="width: 8%;">ID</th>
-                                <th style="width: 25%;">Nombre, Email o Teléfono</th>
-                                <th style="width: 20%;">Última Actividad</th>
-                                <th style="width: 12%;">Mensajes</th>
+                                <th style="width: 5%;">ID</th>
+                                <th style="width: 15%;">Nombre</th>
+                                <th style="width: 15%;">Email</th>
+                                <th style="width: 15%;">Teléfono</th>
+                                <th style="width: 15%;">Última Actividad</th>
+                                <th style="width: 10%;">Mensajes</th>
                                 <th style="width: 15%;">Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -208,12 +210,23 @@ $recent_conversations = $conversations_data['items'];
                                 <tr>
                                     <td data-sort="<?php echo esc_attr($conv['id']); ?>"><strong>#<?php echo esc_html($conv['id']); ?></strong></td>
                                     <td>
+                                        <strong style="color: #0073aa;"><?php echo esc_html($conv['user_name'] ?: 'Sin nombre'); ?></strong><br>
+                                        <?php if (empty($conv['user_name'])): ?>
+                                            <span style="font-size: 11px; color: #8c8f94;">IP: <?php echo esc_html($conv['ip_address'] ?: 'Desc.'); ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
                                         <?php if (!empty($conv['user_email'])): ?>
-                                            <strong style="color: #0073aa;"><?php echo esc_html($conv['user_name'] ?: 'Sin nombre'); ?></strong><br>
                                             <a href="mailto:<?php echo esc_attr($conv['user_email']); ?>" style="font-size: 12px; color: #646970; text-decoration: none;"><?php echo esc_html($conv['user_email']); ?></a>
                                         <?php else: ?>
-                                            <span style="color: #646970;">Anónimo</span><br>
-                                            <span style="font-size: 12px; color: #8c8f94;"><span class="dashicons dashicons-admin-network" style="font-size: 12px; line-height: 1.5;"></span> <?php echo esc_html($conv['ip_address'] ?: 'IP Desconocida'); ?></span>
+                                            <span style="color: #ccc;">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($conv['user_phone'])): ?>
+                                            <span style="font-size: 12px; color: #646970;"><?php echo esc_html($conv['user_phone']); ?></span>
+                                        <?php else: ?>
+                                            <span style="color: #ccc;">-</span>
                                         <?php endif; ?>
                                     </td>
                                     <?php 

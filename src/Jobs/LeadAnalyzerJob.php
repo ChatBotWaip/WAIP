@@ -28,11 +28,11 @@ class LeadAnalyzerJob {
         
         // Buscar conversaciones inactivas > 6 horas con email y sin procesar
         $query = $wpdb->prepare(
-            "SELECT id, user_name, user_email, updated_at 
+            "SELECT id, user_name, user_email, user_phone, updated_at 
              FROM {$conversations_table} 
              WHERE email_sent = 0 
-             AND user_email IS NOT NULL 
-             AND user_email != ''
+             AND (user_email IS NOT NULL OR user_phone IS NOT NULL)
+             AND (user_email != '' OR user_phone != '')
              AND updated_at < DATE_SUB(NOW(), INTERVAL 1 HOUR)
              LIMIT 10" // Procesar max 10 por hora para no agotar tiempo
         );
