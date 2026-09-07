@@ -60,6 +60,7 @@ class SettingsPage {
         register_setting($group, Constants::OPTION_IDLE_MSG);
         register_setting($group, Constants::OPTION_IDLE_TIME);
         register_setting($group, Constants::OPTION_WHATSAPP_NUMBER);
+        register_setting($group, Constants::OPTION_CARTERA_EMAIL);
         register_setting($group, Constants::OPTION_SIMULATOR_MODE);
         register_setting($group, Constants::OPTION_MAINTENANCE_MSG);
         register_setting($group, Constants::OPTION_IS_ACTIVE);

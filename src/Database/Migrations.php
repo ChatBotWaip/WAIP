@@ -28,6 +28,9 @@ class Migrations {
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
             status varchar(50) DEFAULT 'active' NOT NULL,
+            ai_summary longtext DEFAULT NULL,
+            ai_priority varchar(20) DEFAULT NULL,
+            email_sent tinyint(1) DEFAULT 0,
             PRIMARY KEY  (id),
             KEY session_id (session_id)
         ) $charset_collate;";

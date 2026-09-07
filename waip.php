@@ -16,7 +16,7 @@ if (!defined('WAIP_VERSION')) {
     define('WAIP_VERSION', '1.0.1');
 }
 if (!defined('WAIP_DB_VERSION')) {
-    define('WAIP_DB_VERSION', '1.3.0');
+    define('WAIP_DB_VERSION', '1.4.0');
 }
 if (!defined('WAIP_PLUGIN_DIR')) {
     define('WAIP_PLUGIN_DIR', plugin_dir_path(__FILE__));
@@ -84,6 +84,9 @@ add_action('plugins_loaded', function() {
         \Waip\Database\Migrations::run();
         update_option('waip_db_version', WAIP_DB_VERSION);
     }
+    
+    // Inicializar trabajos en segundo plano
+    \Waip\Jobs\LeadAnalyzerJob::init();
 });
 
 // Integración con GitHub Update Checker

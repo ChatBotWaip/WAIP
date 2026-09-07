@@ -83,6 +83,13 @@ use Waip\Config\SettingsManager;
                 </td>
             </tr>
             <tr valign="top">
+                <th scope="row">Correo de Cartera / Alertas (Leads IA)</th>
+                <td>
+                    <input type="email" name="<?php echo esc_attr(Constants::OPTION_CARTERA_EMAIL); ?>" value="<?php echo esc_attr(get_option(Constants::OPTION_CARTERA_EMAIL, 'cartera@miempresa.com')); ?>" class="regular-text" />
+                    <p class="description">Correo electrónico al que se enviarán las alertas automáticas de clientes con el resumen de la Inteligencia Artificial.</p>
+                </td>
+            </tr>
+            <tr valign="top">
                 <th scope="row">Logo del Asistente (Opcional)</th>
                 <td>
                     <div style="display: flex; gap: 10px; align-items: center;">

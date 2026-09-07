@@ -40,44 +40,39 @@ class Dashboard {
                 wp_die('No tienes permisos suficientes.');
             }
             
+            // Aumentar tiempo límite por si hay muchas conversaciones
+            set_time_limit(0);
+            
             $conversations_data = \Waip\Repositories\MessageRepository::getAllConversations(1, 10000);
             $conversations = $conversations_data['items'];
 
             header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename=waip-conversaciones-' . date('Y-m-d') . '.csv');
+            header('Content-Disposition: attachment; filename=waip-leads-' . date('Y-m-d') . '.csv');
             
             // Añadir BOM para que Excel lea correctamente los acentos (UTF-8)
             echo "\xEF\xBB\xBF";
 
             $output = fopen('php://output', 'w');
-            fputcsv($output, ['Fecha', 'Nombre del Cliente', 'Email del Cliente', 'Observación / Necesidad', 'Estado']);
+            fputcsv($output, ['Fecha', 'Nombre del Cliente', 'Email del Cliente', 'Prioridad (IA)', 'Observación / Necesidad (IA)', 'Cantidad de Mensajes', 'Estado']);
 
             foreach ($conversations as $conv) {
-                // Obtener los mensajes del cliente para crear un resumen de su necesidad
-                $messages = \Waip\Repositories\MessageRepository::getMessagesForConversation($conv['id'], 50);
-                $user_messages = [];
-                foreach ($messages as $msg) {
-                    if ($msg['role'] === 'user') {
-                        $user_messages[] = trim(preg_replace('/\s+/', ' ', $msg['content']));
-                    }
-                }
-                
-                $observacion = implode(" | ", $user_messages);
-                if (strlen($observacion) > 1000) {
-                    $observacion = substr($observacion, 0, 997) . '...';
-                }
-                
-                // Si la conversación no tiene nombre, email, ni mensajes del usuario, omitirla para no ensuciar el Excel
-                if (empty($conv['user_name']) && empty($conv['user_email']) && empty($observacion)) {
+                // Solo exportar si tienen nombre o email (Leads identificados)
+                if (empty($conv['user_name']) && empty($conv['user_email'])) {
                     continue;
                 }
+                
+                $observacion = !empty($conv['ai_summary']) ? $conv['ai_summary'] : 'Pendiente de análisis';
+                $prioridad = !empty($conv['ai_priority']) ? $conv['ai_priority'] : 'No asignada';
+                $mensajes_count = isset($conv['message_count']) ? $conv['message_count'] : 0;
 
                 fputcsv($output, [
                     date('d/m/Y H:i', strtotime($conv['updated_at'])),
                     $conv['user_name'] ?: 'Anónimo',
                     $conv['user_email'] ?: 'No registrado',
+                    $prioridad,
                     $observacion,
-                    $conv['status'] === 'active' ? 'En progreso' : 'Cerrada'
+                    $mensajes_count,
+                    $conv['status'] === 'active' ? 'Activa' : 'Cerrada'
                 ]);
             }
             fclose($output);

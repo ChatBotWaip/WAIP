@@ -24,6 +24,7 @@ class Constants {
     const OPTION_IDLE_MSG = 'waip_idle_msg';
     const OPTION_IDLE_TIME = 'waip_idle_time';
     const OPTION_WHATSAPP_NUMBER = 'waip_whatsapp_number';
+    const OPTION_CARTERA_EMAIL = 'waip_cartera_email';
 
     // Configuraciones de RAG
     const OPTION_RAG_ENABLED = 'waip_rag_enabled';
