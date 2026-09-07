@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.14
+ * Version: 1.3.15
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -100,6 +100,55 @@ add_action('admin_init', function() {
     if (isset($_GET['waip_test_cron']) && current_user_can('manage_options')) {
         \Waip\Jobs\LeadAnalyzerJob::run();
         wp_die('Cron ejecutado manualmente. Revisa tu correo o el dashboard.');
+    }
+
+    if (isset($_GET['waip_recalculate_leads']) && current_user_can('manage_options')) {
+        global $wpdb;
+        $messages = $wpdb->get_results("SELECT conversation_id, content FROM " . \Waip\Config\Constants::DB_MESSAGES . " WHERE sender = 'user'");
+        
+        $count = 0;
+        foreach ($messages as $msg) {
+            $message = $msg->content;
+            $conversation_id = $msg->conversation_id;
+            $updated = false;
+
+            $name_patterns = [
+                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
+                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
+            ];
+            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
+                $possible_name = trim($matches[1]);
+                $excluded = ['Hola', 'Buenos', 'Buenas', 'Gracias', 'Ayuda', 'Listo', 'Claro', 'Vale', 'Perfecto', 'Consulta', 'Si', 'No'];
+                if (!in_array(ucfirst(strtolower($possible_name)), $excluded) && mb_strlen($possible_name) > 2) {
+                    \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, $possible_name, null);
+                    $updated = true;
+                }
+            } else {
+                foreach ($name_patterns as $pattern) {
+                    if (preg_match($pattern, $message, $matches)) {
+                        $name = trim($matches[1]);
+                        \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, $name, null);
+                        $updated = true;
+                        break;
+                    }
+                }
+            }
+
+            if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $message, $matches)) {
+                \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, null, $matches[0]);
+                $updated = true;
+            }
+
+            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
+                $phone = preg_replace('/[\s-]/', '', $matches[0]);
+                \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
+                $updated = true;
+            }
+
+            if ($updated) $count++;
+        }
+        
+        wp_die("Recalculado con éxito. Se escanearon " . count($messages) . " mensajes antiguos y se rescataron o actualizaron datos de contacto en {$count} de ellos. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
     }
 });
 
