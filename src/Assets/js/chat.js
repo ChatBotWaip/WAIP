@@ -81,6 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const getFormattedTime = (dateStr = null) => {
+        // Si viene del servidor, le añadimos la Z para forzar a que JS lo interprete como UTC
+        // y lo convierta automáticamente a la zona horaria del dispositivo del usuario.
+        if (dateStr && !dateStr.endsWith('Z')) {
+            dateStr = dateStr.replace(' ', 'T') + 'Z';
+        }
         const date = dateStr ? new Date(dateStr) : new Date();
         return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
     };

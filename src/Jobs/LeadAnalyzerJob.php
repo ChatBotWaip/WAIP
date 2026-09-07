@@ -33,7 +33,7 @@ class LeadAnalyzerJob {
              WHERE email_sent = 0 
              AND user_email IS NOT NULL 
              AND user_email != ''
-             AND updated_at < DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+             AND updated_at < DATE_SUB(NOW(), INTERVAL 1 HOUR)
              LIMIT 10" // Procesar max 10 por hora para no agotar tiempo
         );
         
