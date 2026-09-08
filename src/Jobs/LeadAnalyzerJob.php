@@ -22,20 +22,24 @@ class LeadAnalyzerJob {
         }
     }
 
-    public static function run() {
+    public static function run($force_all = false) {
         global $wpdb;
         $conversations_table = Constants::DB_CONVERSATIONS;
         
-        // Buscar conversaciones inactivas > 6 horas con email y sin procesar
-        $query = $wpdb->prepare(
-            "SELECT id, user_name, user_email, user_phone, updated_at 
+        $time_condition = "";
+        if (!$force_all) {
+            $one_hour_ago = date('Y-m-d H:i:s', current_time('timestamp', 0) - 3600);
+            $time_condition = $wpdb->prepare("AND updated_at < %s", $one_hour_ago);
+        }
+        
+        // Buscar conversaciones con datos de contacto y sin procesar
+        $query = "SELECT id, user_name, user_email, user_phone, updated_at 
              FROM {$conversations_table} 
              WHERE email_sent = 0 
              AND (user_email IS NOT NULL OR user_phone IS NOT NULL)
              AND (user_email != '' OR user_phone != '')
-             AND updated_at < DATE_SUB(NOW(), INTERVAL 1 HOUR)
-             LIMIT 10" // Procesar max 10 por hora para no agotar tiempo
-        );
+             $time_condition
+             LIMIT 10"; // Procesar max 10 por ejecución para no agotar tiempo
         
         $leads = $wpdb->get_results($query, ARRAY_A);
         
