@@ -52,20 +52,34 @@ class ChatController {
             // Guardar mensaje del usuario
             MessageRepository::saveMessage($conversation_id, 'user', $message, [], $attachment);
 
+            $clean_message = trim($message);
+
             // Captura de Leads: Extraer posible correo electrónico
             if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $message, $matches)) {
                 $email = $matches[0];
                 MessageRepository::updateConversationLead($conversation_id, null, $email);
+                $clean_message = str_replace($email, '', $clean_message);
             }
             
+            // Captura de Leads: Extraer posible número de teléfono (Colombiano 10 dígitos o genérico con espacios)
+            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
+                $phone = preg_replace('/[\s-]/', '', $matches[0]);
+                // Guardar teléfono en su propia columna user_phone
+                MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
+                $clean_message = str_replace($matches[0], '', $clean_message);
+            }
             // Captura de Leads: Extraer posible nombre (múltiples patrones)
             $name_patterns = [
                 '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
                 '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
                 '/(?:nombre)[\s:]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
             ];
-            // Si el mensaje es SOLO un nombre (1-3 palabras), también capturarlo
-            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
+            // Limpiar puntuación residual (comas, dos puntos) que el email/teléfono dejaron
+            $clean_message = trim(preg_replace('/[.,:;!?]+/', ' ', $clean_message));
+            $clean_message = preg_replace('/\s+/', ' ', $clean_message);
+
+            // Si lo que quedó del mensaje es SOLO un nombre (1-3 palabras), capturarlo
+            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($clean_message), $matches)) {
                 $possible_name = trim($matches[1]);
                 // Lista extensa de palabras prohibidas
                 $excluded = [
@@ -97,13 +111,7 @@ class ChatController {
                     break;
                 }
             }
-            
-            // Captura de Leads: Extraer posible número de teléfono (Colombiano 10 dígitos o genérico con espacios)
-            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
-                $phone = preg_replace('/[\s-]/', '', $matches[0]);
-                // Guardar teléfono en su propia columna user_phone
-                MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
-            }
+            // (Teléfono ya fue capturado arriba, antes de limpiar el mensaje)
 
             // Construir contexto usando PromptBuilder (Inyección de contexto RAG)
             // Nota: RAG utiliza el mensaje de texto para la búsqueda.
