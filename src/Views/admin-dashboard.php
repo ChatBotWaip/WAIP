@@ -126,7 +126,7 @@ $recent_conversations = $conversations_data['items'];
                                 <div class="waip-chat-meta">
                                     <span><?php echo $msg['role'] === 'user' ? '👤 Cliente' : '🤖 Asistente'; ?></span>
                                     <span><?php 
-                                        $dt = new \DateTime($msg['created_at'], new \DateTimeZone('UTC'));
+                                        $dt = new \DateTime($msg['created_at'], wp_timezone());
                                         $dt->setTimezone(new \DateTimeZone('America/Bogota'));
                                         echo $dt->format('d M H:i'); 
                                     ?></span>
