@@ -36,6 +36,8 @@ class PromptBuilder {
             $premium_rules .= "4. WHATSAPP Y CONTACTO: SIEMPRE que menciones WhatsApp, un número de teléfono, o sugieras contactar a la empresa, DEBES OBLIGATORIAMENTE usar este enlace exacto en Markdown: [Hablar por WhatsApp](https://wa.me/{$clean_number}). ESTÁ ESTRICTAMENTE PROHIBIDO escribir el número de teléfono en texto plano (ej: 301 620 5460), siempre debes usar el enlace Markdown para que se genere el botón.\n";
         }
 
+        $premium_rules .= "5. LIMITACIÓN ESTRICTA DE TEMA (ANTI-ALUCINACIÓN): Si el usuario hace una pregunta o pide ayuda sobre un tema que NO ESTÁ documentado explícitamente en la BASE DE CONOCIMIENTO (por ejemplo, cómo reparar un carro, recetas de cocina, dar consejos personales, etc.), tienes ESTRICTAMENTE PROHIBIDO responder a la pregunta usando tu conocimiento general. En su lugar, debes disculparte amablemente diciendo que eres un asistente comercial y solo puedes dar información sobre los servicios de la empresa.\n";
+
         $base_prompt .= $premium_rules;
 
         if (!$rag_enabled) {

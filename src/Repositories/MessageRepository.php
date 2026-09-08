@@ -61,7 +61,29 @@ class MessageRepository {
         $table = Constants::DB_CONVERSATIONS;
         
         $data = [];
-        if ($name) $data['user_name'] = sanitize_text_field($name);
+        
+        if ($name) {
+            $name = sanitize_text_field(trim($name));
+            // Obtener el nombre actual para evitar sobreescribir un nombre bueno con uno malo
+            $current_name = $wpdb->get_var($wpdb->prepare("SELECT user_name FROM $table WHERE id = %d", $conversation_id));
+            
+            $should_update_name = true;
+            if (!empty($current_name)) {
+                $current_words = str_word_count(trim($current_name));
+                $new_words = str_word_count($name);
+                
+                // Si el nombre viejo tiene 2 o más palabras (ej: "Juan Perez"), y el nuevo solo tiene 1 (ej: "Monto"),
+                // NO lo sobreescribimos, protegemos el nombre original.
+                if ($current_words >= 2 && $new_words == 1) {
+                    $should_update_name = false;
+                }
+            }
+            
+            if ($should_update_name) {
+                $data['user_name'] = $name;
+            }
+        }
+
         if ($email) $data['user_email'] = sanitize_email($email);
         if ($phone) $data['user_phone'] = sanitize_text_field($phone);
         
