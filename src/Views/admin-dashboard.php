@@ -125,7 +125,11 @@ $recent_conversations = $conversations_data['items'];
                                 
                                 <div class="waip-chat-meta">
                                     <span><?php echo $msg['role'] === 'user' ? '👤 Cliente' : '🤖 Asistente'; ?></span>
-                                    <span><?php echo date('d M H:i', strtotime($msg['created_at'])); ?></span>
+                                    <span><?php 
+                                        $dt = new \DateTime($msg['created_at'], new \DateTimeZone('UTC'));
+                                        $dt->setTimezone(new \DateTimeZone('America/Bogota'));
+                                        echo $dt->format('d M H:i'); 
+                                    ?></span>
                                 </div>
                             </div>
                         <?php endforeach; ?>

@@ -67,15 +67,26 @@ class ChatController {
             // Si el mensaje es SOLO un nombre (1-3 palabras), también capturarlo
             if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
                 $possible_name = trim($matches[1]);
-                // Lista extensa de palabras prohibidas para no confundirlas con nombres (en minúscula)
+                // Lista extensa de palabras prohibidas
                 $excluded = [
                     'hola', 'buenos', 'buenas', 'gracias', 'ayuda', 'listo', 'claro', 'vale', 'perfecto', 'consulta', 
                     'si', 'no', 'monto', 'asesor', 'credito', 'préstamo', 'prestamo', 'info', 'informacion', 'interes', 
                     'plazo', 'requisitos', 'tasa', 'cuota', 'dinero', 'agente', 'humano', 'persona', 'bot', 'quiero', 
                     'necesito', 'bien', 'ok', 'okay', 'dale', 'super', 'excelente', 'tardes', 'dias', 'noches',
-                    'chao', 'adios', 'okey', 'bueno', 'buen', 'dia', 'tarde', 'noche', 'ola', 'chat', 'chatbot'
+                    'chao', 'adios', 'okey', 'bueno', 'buen', 'dia', 'tarde', 'noche', 'ola', 'chat', 'chatbot',
+                    'me', 'te', 'se', 'nos', 'le', 'les', 'que', 'como', 'cuando', 'donde', 'porque', 'para', 'pero', 'contestan'
                 ];
-                if (!in_array(strtolower($possible_name), $excluded) && mb_strlen($possible_name) > 2) {
+                
+                $is_valid = true;
+                $words = explode(' ', strtolower($possible_name));
+                foreach ($words as $w) {
+                    if (in_array(trim($w), $excluded)) {
+                        $is_valid = false;
+                        break;
+                    }
+                }
+                
+                if ($is_valid && mb_strlen($possible_name) > 2) {
                     MessageRepository::updateConversationLead($conversation_id, $possible_name, null);
                 }
             }
