@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.15
+ * Version: 1.3.16
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -115,6 +115,7 @@ add_action('admin_init', function() {
             $name_patterns = [
                 '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
                 '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
+                '/(?:nombre)[\s:]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
             ];
             if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
                 $possible_name = trim($matches[1]);

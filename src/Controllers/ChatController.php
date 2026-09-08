@@ -62,6 +62,7 @@ class ChatController {
             $name_patterns = [
                 '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
                 '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
+                '/(?:nombre)[\s:]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
             ];
             // Si el mensaje es SOLO un nombre (1-3 palabras), también capturarlo
             if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
