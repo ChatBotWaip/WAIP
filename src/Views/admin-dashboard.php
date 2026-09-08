@@ -207,7 +207,7 @@ $recent_conversations = $conversations_data['items'];
                         </thead>
                         <tbody>
                             <?php foreach ($recent_conversations as $conv): ?>
-                                <tr>
+                                <tr class="waip-row-<?php echo esc_attr($conv['id']); ?>">
                                     <td data-sort="<?php echo esc_attr($conv['id']); ?>"><strong>#<?php echo esc_html($conv['id']); ?></strong></td>
                                     <td>
                                         <strong style="color: #0073aa;"><?php echo esc_html($conv['user_name'] ?: 'Sin nombre'); ?></strong><br>
@@ -323,6 +323,15 @@ $recent_conversations = $conversations_data['items'];
             pageLength: 10,
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
             order: [[2, "desc"]],
+            stateSave: true, // Mantiene la paginación y los filtros después de recargar
+            drawCallback: function(settings) {
+                // Resaltar la última fila visitada
+                var lastVisited = localStorage.getItem('waip_last_visited');
+                if (lastVisited) {
+                    $('.waip-row-' + lastVisited).css('background-color', '#f0f6fc');
+                    $('.waip-row-' + lastVisited).css('box-shadow', 'inset 4px 0 0 0 #2271b1');
+                }
+            },
             initComplete: function () {
                 var api = this.api();
                 
@@ -346,6 +355,15 @@ $recent_conversations = $conversations_data['items'];
                             api.column(1).search(val ? val : '', true, false).draw();
                         });
                 }
+            }
+        });
+
+        // Guardar el ID de la conversación al darle clic a "Ver chat"
+        $(document).on('click', 'a.waip-btn', function() {
+            var href = $(this).attr('href');
+            if (href && href.indexOf('view_chat_id=') > -1) {
+                var id = href.split('view_chat_id=')[1].split('&')[0];
+                localStorage.setItem('waip_last_visited', id);
             }
         });
     });
