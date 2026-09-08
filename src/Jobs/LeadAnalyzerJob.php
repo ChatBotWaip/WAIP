@@ -130,10 +130,14 @@ Si el cliente definitivamente NO mostró interés comercial o es spam, devuelve:
         $nombre = !empty($lead['user_name']) ? $lead['user_name'] : 'Lead Anónimo';
         $subject = "[{$emoji} Prioridad {$prioridad}] Nuevo Lead WAIP - {$nombre}";
         
+        $fecha_dt = new \DateTime($lead['updated_at'], wp_timezone());
+        $fecha_dt->setTimezone(new \DateTimeZone('America/Bogota'));
+        $fecha_formateada = $fecha_dt->format('Y-m-d h:i A');
+
         $message = "<h2>Nuevo Lead Capturado por IA</h2>";
         $message .= "<p><strong>Nombre:</strong> {$nombre}</p>";
         $message .= "<p><strong>Contacto:</strong> {$lead['user_email']}</p>";
-        $message .= "<p><strong>Fecha del chat:</strong> {$lead['updated_at']}</p>";
+        $message .= "<p><strong>Fecha del chat:</strong> {$fecha_formateada}</p>";
         $message .= "<h3>Resumen (IA)</h3>";
         $message .= "<p style='font-size: 16px; border-left: 4px solid #0073aa; padding-left: 10px;'><em>{$resumen}</em></p>";
         $message .= "<h3>Historial Completo</h3>";
