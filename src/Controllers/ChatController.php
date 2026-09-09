@@ -40,7 +40,14 @@ class ChatController {
         $message = sanitize_text_field($params['message'] ?? '');
         $attachment = $params['attachment'] ?? null; // Imagen en Base64
         $session_id = sanitize_text_field($params['session_id'] ?? wp_generate_uuid4());
-        $ip_address = $request->get_header('x_forwarded_for') ?: $_SERVER['REMOTE_ADDR'];
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+
+        $rate_limit_key = 'waip_rate_limit_' . md5($ip_address);
+        $attempts = get_transient($rate_limit_key) ?: 0;
+        if ($attempts >= 20) {
+            return new WP_REST_Response(['error' => 'Too many requests. Please wait a minute.'], 429);
+        }
+        set_transient($rate_limit_key, $attempts + 1, 60);
 
         if (empty($message) && empty($attachment)) {
             return new WP_REST_Response(['error' => 'Message is empty'], 400);
@@ -52,66 +59,11 @@ class ChatController {
             // Guardar mensaje del usuario
             MessageRepository::saveMessage($conversation_id, 'user', $message, [], $attachment);
 
-            $clean_message = trim($message);
-
-            // Captura de Leads: Extraer posible correo electrónico
-            if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $message, $matches)) {
-                $email = $matches[0];
-                MessageRepository::updateConversationLead($conversation_id, null, $email);
-                $clean_message = str_replace($email, '', $clean_message);
+            // Captura de Leads centralizada
+            $extracted = \Waip\Services\LeadExtractor::extractContactInfo($message);
+            if ($extracted['email'] || $extracted['phone'] || $extracted['name']) {
+                MessageRepository::updateConversationLead($conversation_id, $extracted['name'], $extracted['email'], $extracted['phone']);
             }
-            
-            // Captura de Leads: Extraer posible número de teléfono (Colombiano 10 dígitos o genérico con espacios)
-            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
-                $phone = preg_replace('/[\s-]/', '', $matches[0]);
-                // Guardar teléfono en su propia columna user_phone
-                MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
-                $clean_message = str_replace($matches[0], '', $clean_message);
-            }
-            // Captura de Leads: Extraer posible nombre (múltiples patrones)
-            $name_patterns = [
-                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
-                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
-                '/(?:nombre)[\s:]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
-            ];
-            // Limpiar puntuación residual (comas, dos puntos) que el email/teléfono dejaron
-            $clean_message = trim(preg_replace('/[.,:;!?]+/', ' ', $clean_message));
-            $clean_message = preg_replace('/\s+/', ' ', $clean_message);
-
-            // Si lo que quedó del mensaje es SOLO un nombre (1-3 palabras), capturarlo
-            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($clean_message), $matches)) {
-                $possible_name = trim($matches[1]);
-                // Lista extensa de palabras prohibidas
-                $excluded = [
-                    'hola', 'buenos', 'buenas', 'gracias', 'ayuda', 'listo', 'claro', 'vale', 'perfecto', 'consulta', 
-                    'si', 'no', 'monto', 'asesor', 'credito', 'préstamo', 'prestamo', 'info', 'informacion', 'interes', 
-                    'plazo', 'requisitos', 'tasa', 'cuota', 'dinero', 'agente', 'humano', 'persona', 'bot', 'quiero', 
-                    'necesito', 'bien', 'ok', 'okay', 'dale', 'super', 'excelente', 'tardes', 'dias', 'noches',
-                    'chao', 'adios', 'okey', 'bueno', 'buen', 'dia', 'tarde', 'noche', 'ola', 'chat', 'chatbot',
-                    'me', 'te', 'se', 'nos', 'le', 'les', 'que', 'como', 'cuando', 'donde', 'porque', 'para', 'pero', 'contestan'
-                ];
-                
-                $is_valid = true;
-                $words = explode(' ', strtolower($possible_name));
-                foreach ($words as $w) {
-                    if (in_array(trim($w), $excluded)) {
-                        $is_valid = false;
-                        break;
-                    }
-                }
-                
-                if ($is_valid && mb_strlen($possible_name) > 2) {
-                    MessageRepository::updateConversationLead($conversation_id, $possible_name, null);
-                }
-            }
-            foreach ($name_patterns as $pattern) {
-                if (preg_match($pattern, $message, $matches)) {
-                    $name = trim($matches[1]);
-                    MessageRepository::updateConversationLead($conversation_id, $name, null);
-                    break;
-                }
-            }
-            // (Teléfono ya fue capturado arriba, antes de limpiar el mensaje)
 
             // Construir contexto usando PromptBuilder (Inyección de contexto RAG)
             // Nota: RAG utiliza el mensaje de texto para la búsqueda.
@@ -199,7 +151,7 @@ class ChatController {
 
     public function get_history(WP_REST_Request $request) {
         $session_id = sanitize_text_field($request->get_param('session_id') ?? '');
-        $ip_address = $request->get_header('x_forwarded_for') ?: $_SERVER['REMOTE_ADDR'];
+        $ip_address = $_SERVER['REMOTE_ADDR'];
         
         if (empty($session_id)) {
             return new WP_REST_Response(['messages' => []], 200);
@@ -224,7 +176,7 @@ class ChatController {
         $params = $request->get_json_params();
         $message = sanitize_text_field($params['message'] ?? '');
         $session_id = sanitize_text_field($params['session_id'] ?? wp_generate_uuid4());
-        $ip_address = $request->get_header('x_forwarded_for') ?: $_SERVER['REMOTE_ADDR'];
+        $ip_address = $_SERVER['REMOTE_ADDR'];
 
         if (empty($message)) {
             return new WP_REST_Response(['error' => 'Message is empty'], 400);

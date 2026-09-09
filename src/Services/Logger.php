@@ -16,7 +16,7 @@ class Logger {
             $message = json_encode($message, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
 
-        $table = Constants::DB_LOGS;
+        $table = Constants::tableLogs();
 
         $wpdb->insert(
             $table,

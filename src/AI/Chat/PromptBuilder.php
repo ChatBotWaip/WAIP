@@ -20,8 +20,7 @@ class PromptBuilder {
     public static function buildSystemPrompt($user_message) {
         $base_prompt = SettingsManager::getSystemPrompt();
         
-        // Asumimos que RAG está habilitado por defecto para el Sprint 2
-        $rag_enabled = SettingsManager::isRagEnabled() || true; // Forzando a true para pruebas del Sprint 2 si falta la opción
+        $rag_enabled = SettingsManager::isRagEnabled();
 
         // Reglas Premium
         $premium_rules = "\n\nREGLAS DE ORO OBLIGATORIAS:\n";

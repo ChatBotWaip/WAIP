@@ -13,7 +13,18 @@ class SettingsManager {
     }
 
     public static function getApiKey() {
-        return get_option(Constants::OPTION_API_KEY, '');
+        $key = get_option(Constants::OPTION_API_KEY, '');
+        if (strpos($key, 'WAIP_ENC:') === 0) {
+            return base64_decode(substr($key, 9));
+        }
+        return $key;
+    }
+
+    public static function getMaskedApiKey() {
+        $key = self::getApiKey();
+        if (empty($key)) return '';
+        if (strlen($key) < 10) return str_repeat('*', strlen($key));
+        return substr($key, 0, 4) . str_repeat('*', 20) . substr($key, -4);
     }
 
     public static function getModel() {

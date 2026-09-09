@@ -24,7 +24,7 @@ class LeadAnalyzerJob {
 
     public static function run($force_all = false) {
         global $wpdb;
-        $conversations_table = Constants::DB_CONVERSATIONS;
+        $conversations_table = Constants::tableConversations();
         
         $time_condition = "";
         if (!$force_all) {
@@ -56,7 +56,7 @@ class LeadAnalyzerJob {
     
     private static function process_lead($lead, $openai) {
         global $wpdb;
-        $conversations_table = Constants::DB_CONVERSATIONS;
+        $conversations_table = Constants::tableConversations();
         
         try {
             $messages = MessageRepository::getMessagesForConversation($lead['id'], 100);
@@ -135,13 +135,13 @@ Si el cliente definitivamente NO mostró interés comercial o es spam, devuelve:
         $fecha_formateada = $fecha_dt->format('Y-m-d h:i A');
 
         $message = "<h2>Nuevo Lead Capturado por IA</h2>";
-        $message .= "<p><strong>Nombre:</strong> {$nombre}</p>";
-        $message .= "<p><strong>Contacto:</strong> {$lead['user_email']}</p>";
-        $message .= "<p><strong>Fecha del chat:</strong> {$fecha_formateada}</p>";
+        $message .= "<p><strong>Nombre:</strong> " . esc_html($nombre) . "</p>";
+        $message .= "<p><strong>Contacto:</strong> " . esc_html($lead['user_email']) . "</p>";
+        $message .= "<p><strong>Fecha del chat:</strong> " . esc_html($fecha_formateada) . "</p>";
         $message .= "<h3>Resumen (IA)</h3>";
-        $message .= "<p style='font-size: 16px; border-left: 4px solid #0073aa; padding-left: 10px;'><em>{$resumen}</em></p>";
+        $message .= "<p style='font-size: 16px; border-left: 4px solid #0073aa; padding-left: 10px;'><em>" . esc_html($resumen) . "</em></p>";
         $message .= "<h3>Historial Completo</h3>";
-        $message .= "<pre style='background:#f4f4f4; padding:15px; border-radius: 5px; white-space: pre-wrap; font-family: monospace;'>{$chat}</pre>";
+        $message .= "<pre style='background:#f4f4f4; padding:15px; border-radius: 5px; white-space: pre-wrap; font-family: monospace;'>" . esc_html($chat) . "</pre>";
         
         $headers = array('Content-Type: text/html; charset=UTF-8');
         

@@ -11,7 +11,7 @@ class MessageRepository {
 
     public static function createConversation($session_id, $ip_address = null) {
         global $wpdb;
-        $table = Constants::DB_CONVERSATIONS;
+        $table = Constants::tableConversations();
         
         $wpdb->insert($table, [
             'session_id' => $session_id,
@@ -26,7 +26,7 @@ class MessageRepository {
 
     public static function getConversationIdBySession($session_id, $ip_address = null) {
         global $wpdb;
-        $table = Constants::DB_CONVERSATIONS;
+        $table = Constants::tableConversations();
         
         $sql = $wpdb->prepare("SELECT id, updated_at FROM $table WHERE session_id = %s AND status = 'active' ORDER BY id DESC LIMIT 1", $session_id);
         $row = $wpdb->get_row($sql);
@@ -58,7 +58,7 @@ class MessageRepository {
 
     public static function updateConversationLead($conversation_id, $name = null, $email = null, $phone = null) {
         global $wpdb;
-        $table = Constants::DB_CONVERSATIONS;
+        $table = Constants::tableConversations();
         
         $data = [];
         
@@ -94,7 +94,7 @@ class MessageRepository {
 
     public static function getMessagesForConversation($conversation_id, $limit = 100) {
         global $wpdb;
-        $table = Constants::DB_MESSAGES;
+        $table = Constants::tableMessages();
         
         // Obtener los ÚLTIMOS $limit mensajes, pero devolverlos en orden cronológico (ASC)
         $sql = $wpdb->prepare("
@@ -124,14 +124,14 @@ class MessageRepository {
      */
     public static function saveMessage($conversation_id, $role, $content, $metrics = [], $attachment_url = null) {
         global $wpdb;
-        $table = Constants::DB_MESSAGES;
-        $conversations_table = Constants::DB_CONVERSATIONS;
+        $table = Constants::tableMessages();
+        $conversations_table = Constants::tableConversations();
 
         $data = [
             'conversation_id' => $conversation_id,
             'role'            => sanitize_text_field($role),
-            'content'         => $content,
-            'attachment_url'  => $attachment_url,
+            'content'         => sanitize_textarea_field($content),
+            'attachment_url'  => $attachment_url ? esc_url_raw($attachment_url) : null,
             'created_at'      => current_time('mysql')
         ];
 
@@ -153,8 +153,8 @@ class MessageRepository {
 
     public static function deleteOldConversations() {
         global $wpdb;
-        $conversations_table = Constants::DB_CONVERSATIONS;
-        $messages_table = Constants::DB_MESSAGES;
+        $conversations_table = Constants::tableConversations();
+        $messages_table = Constants::tableMessages();
 
         // Eliminar conversaciones con 0 mensajes (basura)
         $wpdb->query("DELETE FROM $conversations_table WHERE id NOT IN (SELECT DISTINCT conversation_id FROM $messages_table)");
@@ -177,8 +177,8 @@ class MessageRepository {
 
     public static function getAllConversations($page = 1, $per_page = 20) {
         global $wpdb;
-        $table = Constants::DB_CONVERSATIONS;
-        $messages_table = Constants::DB_MESSAGES;
+        $table = Constants::tableConversations();
+        $messages_table = Constants::tableMessages();
         $offset = ($page - 1) * $per_page;
 
         // Obtener recuento total

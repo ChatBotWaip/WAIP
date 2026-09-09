@@ -20,8 +20,8 @@ class DocumentManager {
      */
     public static function ingestText($title, $text, $type = 'manual_text', $source_url = 'admin_input') {
         global $wpdb;
-        $doc_table = Constants::DB_DOCUMENTS;
-        $emb_table = Constants::DB_EMBEDDINGS;
+        $doc_table = Constants::tableDocuments();
+        $emb_table = Constants::tableEmbeddings();
 
         // 1. Dividir texto en fragmentos (Chunks)
         $chunks = TextChunker::chunkText($text);
@@ -139,8 +139,8 @@ class DocumentManager {
      */
     public static function deleteDocument($id) {
         global $wpdb;
-        $wpdb->delete(Constants::DB_EMBEDDINGS, ['document_id' => $id]);
-        $wpdb->delete(Constants::DB_DOCUMENTS, ['id' => $id]);
+        $wpdb->delete(Constants::tableEmbeddings(), ['document_id' => $id]);
+        $wpdb->delete(Constants::tableDocuments(), ['id' => $id]);
         return true;
     }
 
@@ -149,8 +149,8 @@ class DocumentManager {
      */
     public static function updateDocument($id, $title, $text) {
         global $wpdb;
-        $doc_table = Constants::DB_DOCUMENTS;
-        $emb_table = Constants::DB_EMBEDDINGS;
+        $doc_table = Constants::tableDocuments();
+        $emb_table = Constants::tableEmbeddings();
 
         $doc = $wpdb->get_row($wpdb->prepare("SELECT * FROM $doc_table WHERE id = %d", $id));
         if (!$doc) return "Documento no encontrado.";
@@ -197,7 +197,7 @@ class DocumentManager {
      */
     public static function getDocument($id) {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM " . Constants::DB_DOCUMENTS . " WHERE id = %d", $id), ARRAY_A);
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM " . Constants::tableDocuments() . " WHERE id = %d", $id), ARRAY_A);
     }
 
     /**
@@ -205,8 +205,8 @@ class DocumentManager {
      */
     public static function getAllDocuments() {
         global $wpdb;
-        $doc_table = Constants::DB_DOCUMENTS;
-        $emb_table = Constants::DB_EMBEDDINGS;
+        $doc_table = Constants::tableDocuments();
+        $emb_table = Constants::tableEmbeddings();
 
         $sql = "
             SELECT d.*, 

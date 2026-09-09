@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 // Definir constantes del plugin antes del autoloader
 if (!defined('WAIP_VERSION')) {
-    define('WAIP_VERSION', '1.0.1');
+    define('WAIP_VERSION', '1.3.24');
 }
 if (!defined('WAIP_DB_VERSION')) {
     define('WAIP_DB_VERSION', '1.4.0');
@@ -91,20 +91,29 @@ add_action('plugins_loaded', function() {
 
 // Añadir un trigger para pruebas manuales del cron de correos y actualización del DB
 add_action('admin_init', function() {
-    // Forzar actualización de esquema para añadir columna user_phone
-    if (get_option('waip_db_version') !== '1.3.10') {
-        \Waip\Database\Migrations::run();
-        update_option('waip_db_version', '1.3.10');
-    }
 
     if (isset($_GET['waip_test_cron']) && current_user_can('manage_options')) {
+        check_admin_referer('waip_manual_cron');
         \Waip\Jobs\LeadAnalyzerJob::run(true); // Forzar sin esperar 1 hora
         wp_die('Cron ejecutado manualmente (Ignorando espera de 1 hora). Revisa tu correo o el dashboard.');
     }
 
+    register_setting(\Waip\Config\Constants::SETTINGS_GROUP, \Waip\Config\Constants::OPTION_IS_ACTIVE);
+
+    // Filtro para ofuscar la API Key antes de guardarla en la base de datos
+    add_filter('pre_update_option_' . \Waip\Config\Constants::OPTION_API_KEY, function($new_value, $old_value) {
+        if (empty($new_value)) return $new_value;
+        // Si contiene asteriscos, asumimos que el usuario no la cambió y devolvemos el valor original (encriptado o no)
+        if (strpos($new_value, '****') !== false) {
+            return $old_value;
+        }
+        return 'WAIP_ENC:' . base64_encode($new_value);
+    }, 10, 2);
+
     if (isset($_GET['waip_recalculate_leads']) && current_user_can('manage_options')) {
+        check_admin_referer('waip_recalculate_leads');
         global $wpdb;
-        $messages = $wpdb->get_results("SELECT conversation_id, content FROM " . \Waip\Config\Constants::DB_MESSAGES . " WHERE sender = 'user'");
+        $messages = $wpdb->get_results("SELECT conversation_id, content FROM " . \Waip\Config\Constants::tableMessages() . " WHERE sender = 'user'");
         
         $count = 0;
         foreach ($messages as $msg) {
@@ -112,37 +121,10 @@ add_action('admin_init', function() {
             $conversation_id = $msg->conversation_id;
             $updated = false;
 
-            $name_patterns = [
-                '/(?:me llamo|mi nombre es|soy|me dicen|hola[\s,]+(?:soy|me llamo))\s+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
-                '/(?:hola|buenos?\s+d[ií]as?|buenas?\s+tardes?|buenas?\s+noches?)[\s,.:!]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+)?)\s+(?:aqu[ií]|tengo|quisiera|necesito|quiero|estoy)/iu',
-                '/(?:nombre)[\s:]+([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})/iu',
-            ];
-            if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
-                $possible_name = trim($matches[1]);
-                $excluded = ['Hola', 'Buenos', 'Buenas', 'Gracias', 'Ayuda', 'Listo', 'Claro', 'Vale', 'Perfecto', 'Consulta', 'Si', 'No'];
-                if (!in_array(ucfirst(strtolower($possible_name)), $excluded) && mb_strlen($possible_name) > 2) {
-                    \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, $possible_name, null);
-                    $updated = true;
-                }
-            } else {
-                foreach ($name_patterns as $pattern) {
-                    if (preg_match($pattern, $message, $matches)) {
-                        $name = trim($matches[1]);
-                        \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, $name, null);
-                        $updated = true;
-                        break;
-                    }
-                }
-            }
-
-            if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $message, $matches)) {
-                \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, null, $matches[0]);
-                $updated = true;
-            }
-
-            if (preg_match('/(?:\+?57)?[\s-]*(?:3\d{2})[\s-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}/', $message, $matches)) {
-                $phone = preg_replace('/[\s-]/', '', $matches[0]);
-                \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, null, null, $phone);
+            $extracted = \Waip\Services\LeadExtractor::extractContactInfo($message);
+            
+            if ($extracted['email'] || $extracted['phone'] || $extracted['name']) {
+                \Waip\Repositories\MessageRepository::updateConversationLead($conversation_id, $extracted['name'], $extracted['email'], $extracted['phone']);
                 $updated = true;
             }
 

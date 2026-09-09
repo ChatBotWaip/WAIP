@@ -11,7 +11,7 @@ class DocumentRepository {
 
     public static function saveDocument($post_id, $title, $type, $url, $status = 'indexed') {
         global $wpdb;
-        $table = Constants::DB_DOCUMENTS;
+        $table = Constants::tableDocuments();
         
         $existing_doc_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE source_url = %s", $url));
 
@@ -40,7 +40,7 @@ class DocumentRepository {
 
     public static function saveEmbedding($document_id, $chunk_text, $vector_array) {
         global $wpdb;
-        $table = Constants::DB_EMBEDDINGS;
+        $table = Constants::tableEmbeddings();
 
         $wpdb->insert($table, [
             'document_id' => $document_id,
@@ -53,13 +53,13 @@ class DocumentRepository {
 
     public static function deleteEmbeddings($document_id) {
         global $wpdb;
-        $table = Constants::DB_EMBEDDINGS;
+        $table = Constants::tableEmbeddings();
         $wpdb->delete($table, ['document_id' => $document_id]);
     }
 
     public static function getAllEmbeddings() {
         global $wpdb;
-        $table = Constants::DB_EMBEDDINGS;
+        $table = Constants::tableEmbeddings();
         
         // Esto trae todos los vectores a memoria. Es exactamente lo solicitado para el MVP ("similitud del coseno se hará en memoria usando PHP")
         return $wpdb->get_results("SELECT id, document_id, chunk_text, vector_json FROM $table", ARRAY_A);

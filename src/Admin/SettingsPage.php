@@ -68,8 +68,9 @@ class SettingsPage {
 
     public function render_page() {
         if (isset($_POST['waip_purge_logs']) && current_user_can('manage_options')) {
+            check_admin_referer('waip_purge_logs_action', 'waip_purge_logs_nonce');
             global $wpdb;
-            $wpdb->query("DELETE FROM " . Constants::DB_LOGS . " WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)");
+            $wpdb->query("DELETE FROM " . Constants::tableLogs() . " WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)");
             echo '<div class="notice notice-success is-dismissible"><p>Logs antiguos purgados exitosamente.</p></div>';
         }
         require WAIP_PLUGIN_DIR . 'src/Views/admin-settings.php';

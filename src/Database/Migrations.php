@@ -15,9 +15,9 @@ class Migrations {
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-        $conversations_table = Constants::DB_CONVERSATIONS;
-        $messages_table = Constants::DB_MESSAGES;
-        $logs_table = Constants::DB_LOGS;
+        $conversations_table = Constants::tableConversations();
+        $messages_table = Constants::tableMessages();
+        $logs_table = Constants::tableLogs();
 
         $sql_conversations = "CREATE TABLE {$conversations_table} (
             id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -61,8 +61,8 @@ class Migrations {
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
-        $documents_table = Constants::DB_DOCUMENTS;
-        $embeddings_table = Constants::DB_EMBEDDINGS;
+        $documents_table = Constants::tableDocuments();
+        $embeddings_table = Constants::tableEmbeddings();
 
         $sql_documents = "CREATE TABLE {$documents_table} (
             id bigint(20) NOT NULL AUTO_INCREMENT,

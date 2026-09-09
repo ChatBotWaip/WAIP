@@ -263,7 +263,7 @@ class Dashboard {
      */
     private function analyze_pending_leads($conversations) {
         global $wpdb;
-        $table = \Waip\Config\Constants::DB_CONVERSATIONS;
+        $table = \Waip\Config\Constants::tableConversations();
         
         $pending = [];
         foreach ($conversations as $conv) {

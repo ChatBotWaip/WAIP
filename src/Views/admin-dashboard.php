@@ -6,17 +6,17 @@ global $wpdb;
 use Waip\Config\Constants;
 
 // Obtener estadísticas completas para el dashboard
-$conversations_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::DB_CONVERSATIONS);
-$messages_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::DB_MESSAGES);
-$total_input_tokens = $wpdb->get_var("SELECT SUM(input_tokens) FROM " . Constants::DB_MESSAGES);
-$total_output_tokens = $wpdb->get_var("SELECT SUM(output_tokens) FROM " . Constants::DB_MESSAGES);
-$total_cost = $wpdb->get_var("SELECT SUM(total_cost) FROM " . Constants::DB_MESSAGES);
+$conversations_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::tableConversations());
+$messages_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::tableMessages());
+$total_input_tokens = $wpdb->get_var("SELECT SUM(input_tokens) FROM " . Constants::tableMessages());
+$total_output_tokens = $wpdb->get_var("SELECT SUM(output_tokens) FROM " . Constants::tableMessages());
+$total_cost = $wpdb->get_var("SELECT SUM(total_cost) FROM " . Constants::tableMessages());
 
-$documents_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::DB_DOCUMENTS);
-$embeddings_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::DB_EMBEDDINGS);
+$documents_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::tableDocuments());
+$embeddings_count = $wpdb->get_var("SELECT COUNT(*) FROM " . Constants::tableEmbeddings());
 
 // Obtener registros recientes (Obtener hasta 500 para datatables)
-$recent_logs = $wpdb->get_results("SELECT * FROM " . Constants::DB_LOGS . " ORDER BY created_at DESC LIMIT 500");
+$recent_logs = $wpdb->get_results("SELECT * FROM " . Constants::tableLogs() . " ORDER BY created_at DESC LIMIT 500");
 
 // Comprobar si se está viendo un chat específico
 $view_chat_id = isset($_GET['view_chat_id']) ? intval($_GET['view_chat_id']) : 0;

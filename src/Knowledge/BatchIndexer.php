@@ -19,7 +19,7 @@ class BatchIndexer {
 
     public function handle_ajax_index_post() {
         // Control de seguridad básico
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_options') || !check_ajax_referer('waip_add_knowledge', 'security', false)) {
             wp_send_json_error('No tienes permisos para esto.', 403);
         }
 
@@ -87,7 +87,7 @@ class BatchIndexer {
             return false;
         }
 
-        $chunks = Chunker::chunkText($content);
+        $chunks = TextChunker::chunkText($content);
         if (empty($chunks)) {
             return false;
         }

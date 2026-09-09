@@ -32,7 +32,7 @@ use Waip\Config\SettingsManager;
             <tr valign="top">
                 <th scope="row">Clave API de OpenAI</th>
                 <td>
-                    <input type="password" name="<?php echo esc_attr(Constants::OPTION_API_KEY); ?>" value="<?php echo esc_attr(SettingsManager::getApiKey()); ?>" class="regular-text" />
+                    <input type="password" name="<?php echo esc_attr(Constants::OPTION_API_KEY); ?>" value="<?php echo esc_attr(SettingsManager::getMaskedApiKey()); ?>" class="regular-text" />
                     <p class="description">Tu clave secreta de la API de OpenAI.</p>
                 </td>
             </tr>
@@ -152,6 +152,7 @@ use Waip\Config\SettingsManager;
     <hr style="margin: 30px 0;">
     <h2>Mantenimiento de Base de Datos</h2>
     <form method="post" action="">
+        <?php wp_nonce_field('waip_purge_logs_action', 'waip_purge_logs_nonce'); ?>
         <p class="description">Puedes borrar todos los registros del sistema (logs) con más de 30 días de antigüedad para liberar espacio y mejorar el rendimiento.</p>
         <button type="submit" name="waip_purge_logs" value="1" class="button button-secondary" onclick="return confirm('¿Seguro que deseas purgar los logs antiguos? Esto no se puede deshacer.');">Purgar Logs Antiguos (>30 días)</button>
     </form>
