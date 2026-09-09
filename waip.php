@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.25
+ * Version: 1.3.26
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -46,24 +46,6 @@ spl_autoload_register(function ($class) {
 // Inicializar Plugin
 if (!function_exists('waip_init')) {
     function waip_init() {
-        // --- INICIO SCRIPT DE RECUPERACIÓN AUTOMÁTICA ---
-        global $wpdb;
-        $old_prefix = 'wp_ai_';
-        $new_prefix = $wpdb->prefix . 'ai_';
-        if ($old_prefix !== $new_prefix) {
-            $tables = ['conversations', 'messages', 'logs', 'documents', 'embeddings'];
-            foreach ($tables as $table) {
-                $old_table = $old_prefix . $table;
-                $new_table = $new_prefix . $table;
-                // Si la tabla vieja existe, la renombramos a la nueva (y borramos la nueva si está vacía)
-                if ($wpdb->get_var("SHOW TABLES LIKE '$old_table'") === $old_table) {
-                    $wpdb->query("DROP TABLE IF EXISTS $new_table");
-                    $wpdb->query("RENAME TABLE $old_table TO $new_table");
-                }
-            }
-        }
-        // --- FIN SCRIPT DE RECUPERACIÓN ---
-
         $settingsManager = new \Waip\Config\SettingsManager();
         $settingsManager->init();
 
