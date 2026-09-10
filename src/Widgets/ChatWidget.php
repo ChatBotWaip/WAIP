@@ -30,7 +30,7 @@ class ChatWidget {
             'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber()),
             'quickReplies' => [
                 '❓ Preguntas frecuentes',
-                '📱 Atención personalizada',
+                '📝 Requisitos de crédito',
                 '💰 Opciones de crédito'
             ]
         ]);
