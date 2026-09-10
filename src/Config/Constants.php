@@ -6,11 +6,11 @@ if (!defined('ABSPATH')) {
 }
 
 class Constants {
-    public static function tableConversations() { return 'wp_ai_conversations'; }
-    public static function tableMessages() { return 'wp_ai_messages'; }
-    public static function tableLogs() { return 'wp_ai_logs'; }
-    public static function tableDocuments() { return 'wp_ai_documents'; }
-    public static function tableEmbeddings() { return 'wp_ai_embeddings'; }
+    public static function tableConversations() { global $wpdb; return $wpdb->prefix . 'ai_conversations'; }
+    public static function tableMessages() { global $wpdb; return $wpdb->prefix . 'ai_messages'; }
+    public static function tableLogs() { global $wpdb; return $wpdb->prefix . 'ai_logs'; }
+    public static function tableDocuments() { global $wpdb; return $wpdb->prefix . 'ai_documents'; }
+    public static function tableEmbeddings() { global $wpdb; return $wpdb->prefix . 'ai_embeddings'; }
     
     const SETTINGS_GROUP = 'waip_settings_group';
     const OPTION_API_KEY = 'waip_api_key';

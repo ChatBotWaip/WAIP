@@ -133,6 +133,30 @@ add_action('admin_init', function() {
         
         wp_die("Recalculado con éxito. Se escanearon " . count($messages) . " mensajes antiguos y se rescataron o actualizaron datos de contacto en {$count} de ellos. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
     }
+
+    // --- SCRIPT DE FUSIÓN SEGURA DE BASE DE DATOS ---
+    if (isset($_GET['waip_merge_db']) && current_user_can('manage_options')) {
+        global $wpdb;
+        $old_prefix = 'wp_ai_';
+        $new_prefix = $wpdb->prefix . 'ai_';
+        
+        if ($old_prefix !== $new_prefix) {
+            $tables = ['conversations', 'messages', 'logs', 'documents', 'embeddings'];
+            foreach ($tables as $table) {
+                $old_table = $old_prefix . $table;
+                $new_table = $new_prefix . $table;
+                
+                // Si ambas tablas existen, copiamos los datos de la vieja a la nueva sin borrar nada
+                if ($wpdb->get_var("SHOW TABLES LIKE '$old_table'") === $old_table && 
+                    $wpdb->get_var("SHOW TABLES LIKE '$new_table'") === $new_table) {
+                    $wpdb->query("INSERT IGNORE INTO `$new_table` SELECT * FROM `$old_table`");
+                }
+            }
+            wp_die("¡Base de datos sincronizada con éxito! Todos tus chats y documentos antiguos han sido copiados de forma segura a las tablas correctas sin borrar nada. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
+        } else {
+            wp_die("No se requiere sincronización (los prefijos son iguales). <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
+        }
+    }
 });
 
 // Integración con GitHub Update Checker
