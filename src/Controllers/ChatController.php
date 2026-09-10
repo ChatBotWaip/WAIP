@@ -60,7 +60,7 @@ class ChatController {
             MessageRepository::saveMessage($conversation_id, 'user', $message, [], $attachment);
 
             // Captura de Leads centralizada
-            $extracted = \Waip\Services\LeadExtractor::extractContactInfo($message);
+            $extracted = \Waip\Services\LeadExtractor::extractContactInfo($message, $conversation_id);
             if ($extracted['email'] || $extracted['phone'] || $extracted['name']) {
                 MessageRepository::updateConversationLead($conversation_id, $extracted['name'], $extracted['email'], $extracted['phone']);
             }
