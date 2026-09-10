@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.31
+ * Version: 1.3.32
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -142,13 +142,6 @@ add_action('admin_init', function() {
         
         if ($old_prefix !== $new_prefix) {
             $tables = ['conversations', 'messages', 'logs', 'documents', 'embeddings'];
-            
-            // 1. Limpiar los registros corruptos (fechas corridas a la columna de teléfono)
-            $new_conv_table = $new_prefix . 'conversations';
-            if ($wpdb->get_var("SHOW TABLES LIKE '$new_conv_table'") === $new_conv_table) {
-                // Borrar registros donde el teléfono parece una fecha (ej. 2026-...)
-                $wpdb->query("DELETE FROM `$new_conv_table` WHERE user_phone LIKE '202%'");
-            }
 
             // 2. Sincronizar emparejando los nombres exactos de las columnas
             foreach ($tables as $table) {
@@ -158,7 +151,11 @@ add_action('admin_init', function() {
                 if ($wpdb->get_var("SHOW TABLES LIKE '$old_table'") === $old_table && 
                     $wpdb->get_var("SHOW TABLES LIKE '$new_table'") === $new_table) {
                     
-                    // Obtener columnas de ambas tablas
+                    // a) Borrar de la tabla nueva TODOS los registros que vinieron de la vieja (los que se dañaron)
+                    // Esto conserva intactos los registros realmente nuevos (ej. ID 572)
+                    $wpdb->query("DELETE n FROM `$new_table` n INNER JOIN `$old_table` o ON n.id = o.id");
+
+                    // b) Obtener columnas de ambas tablas para hacer un insert perfecto
                     $old_cols = $wpdb->get_col("DESCRIBE `$old_table`", 0);
                     $new_cols = $wpdb->get_col("DESCRIBE `$new_table`", 0);
                     
@@ -167,11 +164,12 @@ add_action('admin_init', function() {
                     
                     if (!empty($common_cols)) {
                         $cols_str = '`' . implode('`, `', $common_cols) . '`';
+                        // c) Reinsertar los registros emparejando columna por columna exactamente
                         $wpdb->query("INSERT IGNORE INTO `$new_table` ($cols_str) SELECT $cols_str FROM `$old_table`");
                     }
                 }
             }
-            wp_die("¡Base de datos reparada y sincronizada con éxito! Las fechas desfasadas han sido corregidas haciendo coincidir exactamente las columnas. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
+            wp_die("¡Base de datos reparada! Se han limpiado las conversaciones corruptas y se han vuelto a importar de forma milimétrica. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
         } else {
             wp_die("No se requiere sincronización (los prefijos son iguales). <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
         }
