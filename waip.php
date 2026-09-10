@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.33
+ * Version: 1.3.34
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -132,49 +132,6 @@ add_action('admin_init', function() {
         }
         
         wp_die("Recalculado con éxito. Se escanearon " . count($messages) . " mensajes antiguos y se rescataron o actualizaron datos de contacto en {$count} de ellos. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
-    }
-
-    // --- SCRIPT DE FUSIÓN SEGURA DE BASE DE DATOS (REPARACIÓN AVANZADA) ---
-    if (isset($_GET['waip_merge_db']) && current_user_can('manage_options')) {
-        global $wpdb;
-        $old_prefix = 'wp_ai_';
-        $new_prefix = $wpdb->prefix . 'ai_';
-        
-        if ($old_prefix !== $new_prefix) {
-            $tables = ['conversations', 'messages', 'logs', 'documents', 'embeddings'];
-            $html = "<h2>Reporte de Reparación</h2><ul>";
-
-            foreach ($tables as $table) {
-                $old_table = $old_prefix . $table;
-                $new_table = $new_prefix . $table;
-                
-                if ($wpdb->get_var("SHOW TABLES LIKE '$old_table'") === $old_table && 
-                    $wpdb->get_var("SHOW TABLES LIKE '$new_table'") === $new_table) {
-                    
-                    // a) Borrar usando subquery compatible con todas las versiones de MySQL
-                    $deleted = $wpdb->query("DELETE FROM `$new_table` WHERE id IN (SELECT id FROM `$old_table`)");
-                    $html .= "<li><strong>{$table}:</strong> Se borraron {$deleted} registros dañados. ";
-
-                    // b) Obtener columnas
-                    $old_cols = $wpdb->get_col("DESCRIBE `$old_table`", 0);
-                    $new_cols = $wpdb->get_col("DESCRIBE `$new_table`", 0);
-                    $common_cols = array_intersect($old_cols, $new_cols);
-                    
-                    if (!empty($common_cols)) {
-                        $cols_str = '`' . implode('`, `', $common_cols) . '`';
-                        // c) Reinsertar seguro
-                        $inserted = $wpdb->query("INSERT IGNORE INTO `$new_table` ($cols_str) SELECT $cols_str FROM `$old_table`");
-                        $html .= "Se reinsertaron {$inserted} registros correctos emparejando columnas exactas.</li>";
-                    } else {
-                        $html .= "No se encontraron columnas en común.</li>";
-                    }
-                }
-            }
-            $html .= "</ul><p>¡Base de datos reparada con éxito!</p><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>";
-            wp_die($html);
-        } else {
-            wp_die("No se requiere sincronización (los prefijos son iguales). <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
-        }
     }
 });
 
