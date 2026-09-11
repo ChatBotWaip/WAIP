@@ -27,12 +27,7 @@ class ChatWidget {
             'welcomeMessage' => SettingsManager::getWelcomeMessage(),
             'idleMessage' => SettingsManager::getIdleMessage(),
             'idleTime' => SettingsManager::getIdleTime(),
-            'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber()),
-            'quickReplies' => [
-                '❓ Preguntas frecuentes',
-                '📝 Requisitos de crédito',
-                '💰 Opciones de crédito'
-            ]
+            'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber())
         ]);
     }
 

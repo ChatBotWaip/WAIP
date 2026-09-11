@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.35
+ * Version: 1.3.36
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -129,9 +129,18 @@ add_action('admin_init', function() {
             }
 
             if ($updated) $count++;
-        }
-        
         wp_die("Recalculado con éxito. Se escanearon " . count($messages) . " mensajes antiguos y se rescataron o actualizaron datos de contacto en {$count} de ellos. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
+    }
+
+    if (isset($_GET['waip_update_prompt']) && current_user_can('manage_options')) {
+        $new_prompt = "Eres el asesor virtual inteligente de Coodelsur. Tu objetivo principal es RESOLVER las dudas del cliente por ti mismo usando la base de conocimiento. Debes ser sumamente amable, claro y conversacional. NUNCA ofrezcas transferir a un asesor humano o soporte a menos que el cliente lo exija repetidamente o la información requerida sea confidencial y esté totalmente fuera de tu alcance. Puedes realizar simulaciones de crédito aclarando estrictamente que son valores estimados y puramente informativos (requisitos de crédito). Para pagos de créditos o aportes, entrega siempre este link exacto: https://sadminweb.sadmin.net/PayValida.aspx?id9MC/7TNSkqpyr3LpANIg==.";
+        
+        $new_welcome = "¡Hola! Soy tu asistente virtual de Coodelsur. ¿En qué te puedo colaborar el día de hoy?";
+
+        update_option(\Waip\Config\Constants::OPTION_SYSTEM_PROMPT, $new_prompt);
+        update_option(\Waip\Config\Constants::OPTION_WELCOME_MSG, $new_welcome);
+
+        wp_die("¡Configuración actualizada con éxito! Se quitaron los botones de opciones, el mensaje de bienvenida ahora es directo y la IA ha sido configurada para resolver las dudas por sí misma sin escalar al asesor tan rápido. <br><br><a href='" . admin_url('admin.php?page=waip-settings') . "'>Ver Configuración</a>");
     }
 });
 
