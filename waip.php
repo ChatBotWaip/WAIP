@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress AI Platform (WAIP)
  * Description: Motor de asistentes de IA modular y marca blanca para WordPress.
- * Version: 1.3.36
+ * Version: 1.3.37
  * Author: Mariana Cubillos
  * Text Domain: waip
  */
@@ -129,6 +129,7 @@ add_action('admin_init', function() {
             }
 
             if ($updated) $count++;
+        }
         wp_die("Recalculado con éxito. Se escanearon " . count($messages) . " mensajes antiguos y se rescataron o actualizaron datos de contacto en {$count} de ellos. <br><br><a href='" . admin_url('admin.php?page=waip-dashboard') . "'>Volver al Dashboard</a>");
     }
 
