@@ -60,7 +60,7 @@ class LeadExtractor {
             if (preg_match('/^([a-záéíóúñA-ZÁÉÍÓÚÑ]+(?:\s+[a-záéíóúñA-ZÁÉÍÓÚÑ]+){0,2})$/iu', trim($message), $matches)) {
                 $texto_limpio = strtolower(trim($matches[1]));
                 
-                // Excluir palabras muy comunes de chat que nunca son nombres
+                // Excluir palabras o frases comunes que definitivamente no son un nombre
                 $excluded = [
                     'hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'gracias', 'adios', 'chao', 'ok',
                     'si', 'no', 'claro', 'dale', 'listo', 'bueno', 'excelente', 'vale', 'perfecto', 'saludos',
@@ -69,7 +69,10 @@ class LeadExtractor {
                     'buen dia', 'buenas', 'hey', 'uqiero pagar', 'quiero pagar', 'pagar'
                 ];
                 
-                if (!in_array($texto_limpio, $excluded) && strlen($texto_limpio) > 2) {
+                // Excluir si empieza con palabras interrogativas
+                $is_question = preg_match('/^(que|qué|como|cómo|cuando|cuándo|donde|dónde|por que|por qué|cuanto|cuánto|quien|quién|cual|cuál)\b/i', $texto_limpio);
+                
+                if (!in_array($texto_limpio, $excluded) && !$is_question && strlen($texto_limpio) > 2) {
                     // Consultar cuál fue el ÚLTIMO mensaje que envió el bot en esta conversación
                     global $wpdb;
                     $table = \Waip\Config\Constants::tableMessages();
@@ -80,8 +83,10 @@ class LeadExtractor {
                     
                     if ($last_bot_msg) {
                         $last_bot_lower = strtolower($last_bot_msg);
-                        // Si el bot usó la palabra "nombre" o "llamas", asumimos que le preguntó su nombre
-                        if (strpos($last_bot_lower, 'nombre') !== false || strpos($last_bot_lower, 'llama') !== false) {
+                        // Comprobar estrictamente si el bot le pidió el nombre
+                        $bot_asked_name = preg_match('/\b(tu nombre|te llamas|me dices tu nombre|cual es tu nombre|quien eres)\b/', $last_bot_lower);
+                        
+                        if ($bot_asked_name) {
                             $result['name'] = sanitize_text_field($matches[1]);
                         }
                     }

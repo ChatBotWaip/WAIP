@@ -59,12 +59,6 @@ class ChatController {
             // Guardar mensaje del usuario
             MessageRepository::saveMessage($conversation_id, 'user', $message, [], $attachment);
 
-            // Captura de Leads centralizada
-            $extracted = \Waip\Services\LeadExtractor::extractContactInfo($message, $conversation_id);
-            if ($extracted['email'] || $extracted['phone'] || $extracted['name']) {
-                MessageRepository::updateConversationLead($conversation_id, $extracted['name'], $extracted['email'], $extracted['phone']);
-            }
-
             // Construir contexto usando PromptBuilder (Inyección de contexto RAG)
             // Nota: RAG utiliza el mensaje de texto para la búsqueda.
             $system_prompt = \Waip\AI\Chat\PromptBuilder::buildSystemPrompt($message);
@@ -108,13 +102,71 @@ class ChatController {
                     'total_cost' => 0
                 ];
             } else {
-                // Llamar a la IA
+                // Llamar a la IA con Tools
                 $ai = new OpenAIProvider();
                 $model = SettingsManager::getModel();
                 
-                $response = $ai->generateResponse($messages_payload, ['model' => $model]);
+                $tools = [
+                    [
+                        'type' => 'function',
+                        'function' => [
+                            'name' => 'save_contact_info',
+                            'description' => 'Guarda los datos de contacto del usuario (nombre, correo o teléfono) cuando los proporcione de forma natural durante la conversación.',
+                            'parameters' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string', 'description' => 'El nombre del usuario. Debe ser solo el nombre, sin palabras extras.'],
+                                    'email' => ['type' => 'string', 'description' => 'El correo electrónico del usuario.'],
+                                    'phone' => ['type' => 'string', 'description' => 'El número de teléfono del usuario.']
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                
+                $response = $ai->generateResponse($messages_payload, ['model' => $model, 'tools' => $tools]);
 
-                // Calcular costos
+                // Interceptar llamada a herramientas
+                if (!empty($response['tool_calls'])) {
+                    foreach ($response['tool_calls'] as $tool_call) {
+                        if ($tool_call['function']['name'] === 'save_contact_info') {
+                            $args = json_decode($tool_call['function']['arguments'], true);
+                            if (is_array($args)) {
+                                $name = !empty($args['name']) ? $args['name'] : null;
+                                $email = !empty($args['email']) ? $args['email'] : null;
+                                $phone = !empty($args['phone']) ? $args['phone'] : null;
+                                
+                                if ($name || $email || $phone) {
+                                    MessageRepository::updateConversationLead($conversation_id, $name, $email, $phone);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Segunda llamada para que la IA genere un texto de confirmación
+                    $messages_payload[] = [
+                        'role' => 'assistant',
+                        'content' => null,
+                        'tool_calls' => $response['tool_calls']
+                    ];
+                    
+                    foreach ($response['tool_calls'] as $tool_call) {
+                        $messages_payload[] = [
+                            'role' => 'tool',
+                            'tool_call_id' => $tool_call['id'],
+                            'content' => 'Datos guardados exitosamente. Ahora dile al usuario amablemente que ya guardaste su información.'
+                        ];
+                    }
+                    
+                    $second_response = $ai->generateResponse($messages_payload, ['model' => $model]);
+                    
+                    // Acumular tokens y reemplazar el contenido final
+                    $response['content'] = $second_response['content'];
+                    $response['input_tokens'] += $second_response['input_tokens'];
+                    $response['output_tokens'] += $second_response['output_tokens'];
+                }
+
+                // Calcular costos totales
                 $metrics = TokenCounter::calculateCost($model, $response['input_tokens'], $response['output_tokens']);
             }
             

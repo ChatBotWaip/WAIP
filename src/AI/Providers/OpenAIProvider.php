@@ -31,6 +31,13 @@ class OpenAIProvider implements AIInterface {
             'temperature' => $options['temperature'] ?? 0.7,
         );
 
+        if (!empty($options['tools'])) {
+            $body['tools'] = $options['tools'];
+            if (!empty($options['tool_choice'])) {
+                $body['tool_choice'] = $options['tool_choice'];
+            }
+        }
+
         $args = array(
             'body'        => json_encode($body),
             'timeout'     => 45,
@@ -63,11 +70,13 @@ class OpenAIProvider implements AIInterface {
         $content = $data['choices'][0]['message']['content'] ?? '';
         $input_tokens = $data['usage']['prompt_tokens'] ?? 0;
         $output_tokens = $data['usage']['completion_tokens'] ?? 0;
+        $tool_calls = $data['choices'][0]['message']['tool_calls'] ?? null;
 
         return array(
             'content' => $content,
             'input_tokens' => $input_tokens,
             'output_tokens' => $output_tokens,
+            'tool_calls' => $tool_calls,
         );
     }
 }
