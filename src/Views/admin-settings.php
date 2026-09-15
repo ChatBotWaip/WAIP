@@ -126,7 +126,27 @@ use Waip\Config\SettingsManager;
                 </td>
             </tr>
             <tr>
-                <th colspan="2"><h2>Funciones Premium</h2></th>
+                <th colspan="2"><hr style="margin: 10px 0;"><h2>Base de Conocimiento (RAG)</h2></th>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Habilitar Lectura de Documentos</th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="<?php echo esc_attr(Constants::OPTION_RAG_ENABLED); ?>" value="1" <?php checked(SettingsManager::isRagEnabled(), true); ?> />
+                        <strong>Permitir que la IA lea y utilice los documentos indexados para responder</strong>
+                    </label>
+                    <p class="description">Si está desactivado, el bot solo usará el Prompt del Sistema y no leerá ningún documento.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Fragmentos de Memoria (Chunks)</th>
+                <td>
+                    <input type="number" name="<?php echo esc_attr(Constants::OPTION_MAX_CHUNKS); ?>" value="<?php echo esc_attr(SettingsManager::getMaxChunks()); ?>" class="small-text" min="1" max="10" />
+                    <p class="description">Cantidad de fragmentos que el bot extraerá de los documentos por cada pregunta (Por defecto: 3).</p>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2"><hr style="margin: 10px 0;"><h2>Funciones Premium</h2></th>
             </tr>
             <tr valign="top">
                 <th scope="row">Modo Simulador</th>

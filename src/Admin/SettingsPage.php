@@ -64,6 +64,8 @@ class SettingsPage {
         register_setting($group, Constants::OPTION_SIMULATOR_MODE);
         register_setting($group, Constants::OPTION_MAINTENANCE_MSG);
         register_setting($group, Constants::OPTION_IS_ACTIVE);
+        register_setting($group, Constants::OPTION_RAG_ENABLED);
+        register_setting($group, Constants::OPTION_MAX_CHUNKS);
     }
 
     public function render_page() {
