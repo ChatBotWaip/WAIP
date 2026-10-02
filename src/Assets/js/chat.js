@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Lógica de apertura automática (engagement)
     setTimeout(() => {
         const isMobileScreen = window.innerWidth <= 768;
-        if (waipData.isHome && !waipData.isMobile && !isMobileScreen) {
+        if (waipData.isHome === 'yes' && waipData.isMobile === 'no' && !isMobileScreen) {
             if (!hasOpenedChat && chatWindow.classList.contains('waip-hidden')) {
                 chatWindow.classList.remove('waip-hidden');
                 playNotification();

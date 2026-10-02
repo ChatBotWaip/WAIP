@@ -28,8 +28,8 @@ class ChatWidget {
             'idleMessage' => SettingsManager::getIdleMessage(),
             'idleTime' => SettingsManager::getIdleTime(),
             'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber()),
-            'isHome' => (is_front_page() || is_home()),
-            'isMobile' => wp_is_mobile()
+            'isHome' => (is_front_page() || is_home()) ? 'yes' : 'no',
+            'isMobile' => wp_is_mobile() ? 'yes' : 'no'
         ]);
     }
 
