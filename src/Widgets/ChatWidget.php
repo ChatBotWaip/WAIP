@@ -27,7 +27,9 @@ class ChatWidget {
             'welcomeMessage' => SettingsManager::getWelcomeMessage(),
             'idleMessage' => SettingsManager::getIdleMessage(),
             'idleTime' => SettingsManager::getIdleTime(),
-            'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber())
+            'whatsappNumber' => preg_replace('/[^0-9]/', '', SettingsManager::getWhatsappNumber()),
+            'isHome' => (is_front_page() || is_home()),
+            'isMobile' => wp_is_mobile()
         ]);
     }
 

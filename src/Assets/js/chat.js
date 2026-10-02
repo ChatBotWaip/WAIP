@@ -157,10 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica de apertura automática (engagement)
     setTimeout(() => {
-        if (!hasOpenedChat && chatWindow.classList.contains('waip-hidden')) {
-            chatWindow.classList.remove('waip-hidden');
-            playNotification();
-            hasOpenedChat = true;
+        const isMobileScreen = window.innerWidth <= 768;
+        if (waipData.isHome && !waipData.isMobile && !isMobileScreen) {
+            if (!hasOpenedChat && chatWindow.classList.contains('waip-hidden')) {
+                chatWindow.classList.remove('waip-hidden');
+                playNotification();
+                hasOpenedChat = true;
+            }
         }
     }, 5000); // 5 segundos
 
